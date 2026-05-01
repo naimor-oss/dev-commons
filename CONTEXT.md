@@ -149,6 +149,27 @@ Implication for current work:
   not. When the first IoT appliance lands, the lab pieces split out
   cleanly.
 
+## Publication and ownership
+
+These tools are open-source-ready in posture but not yet published.
+When they are pushed to GitHub, they go to a dedicated org for
+workplace open-source — not the owner's personal account, and not
+mixed with private/proprietary work.
+
+Working name for the org: **`NaimorOSS`** (custom domain
+`oss.naimorinc.com`). See
+[`decisions/0001-github-org-naimoross.md`](decisions/0001-github-org-naimoross.md)
+for the full rationale and consequences.
+
+Pre-publish hygiene runs through
+[`PUBLISH-CHECKLIST.md`](PUBLISH-CHECKLIST.md). The known
+pre-publish blockers (e.g. the WS2008 backend credential
+embedded in `smb-proxy-appliance/docs/sketch-smb1-smb3-proxy.sh`)
+are tracked there so they don't get forgotten.
+
+Not all future tooling is open-source-ready. The decision ADR
+sketches what to do for closed-side work when it appears.
+
 ## How to use this file
 
 Refer back to `CONTEXT.md` when:

@@ -17,8 +17,10 @@ you know what they're protecting against.
 | Understand **why this project is shaped the way it is** | [`CONTEXT.md`](CONTEXT.md) |
 | Look up **coding / docs / scripting conventions** | [`STYLE.md`](STYLE.md) |
 | Understand the **multi-agent process and ownership model** | [`AGENTIC-DEVELOPMENT.md`](AGENTIC-DEVELOPMENT.md) |
-| Understand **why there are four (now five) sibling repos** | [`REPO-SPLIT.md`](REPO-SPLIT.md) |
+| Understand **why there are five sibling repos** | [`REPO-SPLIT.md`](REPO-SPLIT.md) |
 | See **which hypervisors / arches are validated** | [`SUPPORTED-ENVIRONMENTS.md`](SUPPORTED-ENVIRONMENTS.md) |
+| Check a repo before **publishing it to GitHub** | [`PUBLISH-CHECKLIST.md`](PUBLISH-CHECKLIST.md) |
+| Look up a **cross-cutting decision** | [`decisions/`](decisions/) |
 | Start a **new appliance repo** | `template-appliance-virtualized/` (or `template-appliance-iot/`) |
 | Run a cross-sibling **sanity check / status / FIXME trawl** | `bin/sanity-check.sh`, `bin/sibling-status.sh`, `bin/find-fixmes.sh` |
 
@@ -59,12 +61,13 @@ why.
 | `AGENTIC-DEVELOPMENT.md` | Multi-agent team model and process |
 | `REPO-SPLIT.md` | Why the project is split across sibling repos |
 | `SUPPORTED-ENVIRONMENTS.md` | Validated-vs-intended hypervisor + arch matrix |
+| `PUBLISH-CHECKLIST.md` | Pre-publish gate for pushing repos to GitHub |
+| `decisions/` | ADR-style log of choices that affect multiple repos |
 | `AGENTS.md` | Agent brief for `dev-commons` itself |
 | `CLAUDE.md` | Compatibility pointer back to `AGENTS.md` |
-| `bin/` | Cross-cutting tooling (sanity check, status, FIXME trawler) |
-| `template-appliance-virtualized/` | Skeleton for a new virtualized appliance |
-| `template-appliance-iot/` | Stub for a future IoT appliance pattern |
-| `decisions/` | ADR-style log of choices that affect multiple repos |
+| `bin/` | Cross-cutting tooling (sanity check, status, FIXME trawler) — Phase 3 |
+| `template-appliance-virtualized/` | Skeleton for a new virtualized appliance — Phase 4 |
+| `template-appliance-iot/` | Stub for a future IoT appliance pattern — Phase 4 |
 
 ## Status
 
