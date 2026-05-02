@@ -157,6 +157,16 @@ Portability:
   See `lab/scenarios/join-domain.sh` for the precedent.
 - `find . -name '*.sh'` rather than `find / ...`; never scan from `/`.
 
+Sourced files (scenarios):
+
+- Scenario files under `lab/scenarios/` are *sourced* by the
+  generic runner, not executed directly. They are function libraries
+  that define `pre_hook` / `run_scenario` / `verify` (see §7), so
+  they intentionally **do not** carry shebangs or `set` lines —
+  doing so would either trip the runner's own `set -euo pipefail`
+  during the source step or be inert noise. The same applies to any
+  other shell file documented as "sourced" rather than "executable".
+
 ## 5. Hypervisor-orchestration code
 
 Hyper-V is the **primary** build/test host today, but it is not the only

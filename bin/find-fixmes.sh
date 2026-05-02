@@ -82,13 +82,15 @@ for r in "${repos[@]}"; do
     # files and ignored dirs don't pollute the report.
     # Exclude meta-files that *talk about* the FIXME convention rather
     # than carrying real FIXMEs: STYLE.md (defines the form),
-    # PUBLISH-CHECKLIST.md (reasons about it), the decisions/ ADRs (may
-    # cite past FIXMEs), and this script itself (regex literals would
-    # self-match). Pattern matches both bare-filename (when run from
-    # inside the repo) and path-prefixed forms.
+    # PUBLISH-CHECKLIST.md (reasons about it), the decisions/ ADRs and
+    # audits/ reports (may cite past FIXMEs), the template-* skeletons
+    # (which describe the form to template users), and this script
+    # itself (regex literals would self-match). Pattern matches both
+    # bare-filename (when run from inside the repo) and path-prefixed
+    # forms.
     matches=$(git ls-files -z 2>/dev/null \
         | xargs -0 grep -EnH "$re" 2>/dev/null \
-        | grep -vE '(^|/)(PUBLISH-CHECKLIST|STYLE)\.md:|(^|/)find-fixmes\.sh:|(^|/)decisions/.*\.md:' \
+        | grep -vE '(^|/)(PUBLISH-CHECKLIST|STYLE)\.md:|(^|/)find-fixmes\.sh:|(^|/)(decisions|audits)/.*\.md:|(^|/)template-[^/]+/' \
         || true)
 
     [[ -z "$matches" ]] && continue
