@@ -34,10 +34,14 @@ Any literal-looking credential is a stop. Required actions:
    or whether to rewrite history with BFG/`git filter-repo` (rare;
    only if the cred would still be sensitive after rotation).
 
-**Known instance**: `smb-proxy-appliance/docs/sketch-smb1-smb3-proxy.sh`
-contains a real WS2008 backend password (`pfuser`). Must be rotated
-+ replaced before that repo is published. Tracked here so it
-doesn't get forgotten.
+**Known instance** (resolved 2026-05-01):
+`smb-proxy-appliance/docs/sketch-smb1-smb3-proxy.sh` previously
+contained a real WS2008 backend password for `pfuser`. The
+production credential was rotated 2026-05-01 and the literal value
+in the file replaced with the placeholder
+`<ROTATED-2026-05-01-see-internal-vault>`. Git history retains the
+old literal but it is operationally neutered. No further action
+needed before publishing the proxy repo on this account.
 
 ### 2. Workplace-identifying content
 
