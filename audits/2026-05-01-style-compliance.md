@@ -20,7 +20,7 @@ Reviewer fills the `Resolution` column on each finding before Phase 6.
 
 ## HIGH severity
 
-### H1 — Samba netplan template missing `dhcp-identifier: mac`
+### H1 — Samba netplan template missing `dhcp-identifier: mac` ✓ DONE in `samba-addc-appliance@0b4f073`
 
 - **STYLE.md ref**: §6 (cloud-init / netplan templates)
 - **Files**: `samba-addc-appliance/lab/templates/cloud-init/network-config.tpl`
@@ -37,9 +37,9 @@ Reviewer fills the `Resolution` column on each finding before Phase 6.
 - **Fix**: add `dhcp-identifier: mac` to the DHCP stanza, optionally
   also tighten `match: name: "e*"` to MAC-based matching for
   parity with the proxy template.
-- **Resolution**: _________
+- **Resolution**: `fix` (see Done line below)
 
-### H2 — `samba-addc-appliance/.gitignore` missing `*creds*`
+### H2 — `samba-addc-appliance/.gitignore` missing `*creds*` ✓ DONE in `samba-addc-appliance@0b4f073`
 
 - **STYLE.md ref**: §2 (.gitignore conventions), §9 (credentials
   layered defenses)
@@ -55,9 +55,9 @@ Reviewer fills the `Resolution` column on each finding before Phase 6.
   `secrets.tdb` locally for inspection, etc.).
 - **Fix**: add the same `*creds*` block as
   `smb-proxy-appliance/.gitignore`.
-- **Resolution**: _________
+- **Resolution**: `fix` (see Done line below)
 
-### H3 — Operator-facing surfaces use "Appliance" framing
+### H3 — Operator-facing surfaces use "Appliance" framing ✓ DONE in `samba-addc-appliance@0b4f073` and `smb-proxy-appliance@e1cc86a`
 
 - **STYLE.md ref**: §15 (builder / operator boundary)
 - **Files**:
@@ -92,11 +92,11 @@ Reviewer fills the `Resolution` column on each finding before Phase 6.
     "this VM" throughout.
   - Builder-facing surfaces (script comments, AGENTS.md, commit
     messages) keep the "appliance" word — they're for builders.
-- **Resolution**: _________
+- **Resolution**: `fix` (see Done line below)
 
 ## MEDIUM severity
 
-### M1 — Stagers hardcode `amd64` instead of accepting `--arch`
+### M1 — Stagers hardcode `amd64` instead of accepting `--arch` ✓ DONE in `lab-router@707cb46`, `samba-addc-appliance@0b4f073`, `smb-proxy-appliance@e1cc86a`
 
 - **STYLE.md ref**: §8 ("Stagers should accept an arch parameter
   even if today only `amd64` is implemented. Future-proof the
@@ -120,9 +120,9 @@ Reviewer fills the `Resolution` column on each finding before Phase 6.
   `guestOS = "debian12-64"` in `export-deploy-master.sh` stays
   amd64 today — `STYLE.md` §8 says the architecture decision in
   ovftool can wait.
-- **Resolution**: _________
+- **Resolution**: `fix` (see Done line below)
 
-### M2 — `lab-kit` and `lab-router` missing `CLAUDE.md` and `HANDOFF.md`
+### M2 — `lab-kit` and `lab-router` missing `CLAUDE.md` and `HANDOFF.md` ✓ DONE in `lab-kit@1a8d86c` and `lab-router@707cb46`
 
 - **STYLE.md ref**: §1 (per-repo top-level structure table)
 - **Files**: `lab-kit/`, `lab-router/`
@@ -138,9 +138,9 @@ Reviewer fills the `Resolution` column on each finding before Phase 6.
   back to `AGENTS.md`) and `HANDOFF.md` (one-paragraph pointer at
   maintained docs) per the proxy / samba pattern, with paths
   updated for the lab-kit / lab-router context.
-- **Resolution**: _________
+- **Resolution**: `fix` (see Done line below)
 
-### M3 — `lab-kit` and `lab-router` README missing "Where do I start?" table
+### M3 — `lab-kit` and `lab-router` README missing "Where do I start?" table ✓ DONE in `lab-kit@1a8d86c` and `lab-router@707cb46`
 
 - **STYLE.md ref**: §3 (`README.md` shape: "Where do I start?" table
   is item 2 of the standard shape)
@@ -155,9 +155,9 @@ Reviewer fills the `Resolution` column on each finding before Phase 6.
 - **Fix proposal**: add a "Where do I start?" table mapping
   intents (architecture? hypervisor backend support? configuration
   schema?) to docs.
-- **Resolution**: _________
+- **Resolution**: `fix` (see Done line below)
 
-### M4 — `dev-commons` missing `HANDOFF.md`
+### M4 — `dev-commons` missing `HANDOFF.md` ✓ DONE in `dev-commons@fa4087e`
 
 - **STYLE.md ref**: §1 (standard files table)
 - **Files**: `dev-commons/`
@@ -173,11 +173,11 @@ Reviewer fills the `Resolution` column on each finding before Phase 6.
   mark `HANDOFF.md` as "(only where the repo is large enough to
   benefit; meta-repos may skip)". The second framing is closer to
   what was actually intended.
-- **Resolution**: _________
+- **Resolution**: `fix` (see Done line below)
 
 ## LOW severity
 
-### L1 — `lab-kit` / `lab-router` `.gitignore` minimal
+### L1 — `lab-kit` / `lab-router` `.gitignore` minimal ✓ DONE in `lab-kit@1a8d86c` and `lab-router@707cb46`
 
 - **STYLE.md ref**: §2 (`.gitignore` conventions)
 - **Files**: `lab-kit/.gitignore`, `lab-router/.gitignore`
@@ -199,9 +199,9 @@ Reviewer fills the `Resolution` column on each finding before Phase 6.
   have `lab/keys/` or `dist/` directories). Keep the existing
   appliance-specific entries (`*.iso`, `*.qcow2`, `*.vhdx` in
   lab-router are useful).
-- **Resolution**: _________
+- **Resolution**: `fix` (see Done line below)
 
-### L2 — `STYLE.md` §4 silent on sourced files
+### L2 — `STYLE.md` §4 silent on sourced files ✓ DONE in `dev-commons@fa4087e`
 
 - **STYLE.md ref**: §4 (Bash style)
 - **Files**: `STYLE.md` itself
@@ -217,9 +217,9 @@ Reviewer fills the `Resolution` column on each finding before Phase 6.
 - **Fix proposal**: add a one-paragraph clarification in §4 that
   scenario files are sourced fragments and follow a different
   contract (described in §7).
-- **Resolution**: _________
+- **Resolution**: `fix` (see Done line below)
 
-### L3 — `find-fixmes.sh` exclusion misses `template-appliance-virtualized/`
+### L3 — `find-fixmes.sh` exclusion misses `template-appliance-virtualized/` ✓ DONE in `dev-commons@fa4087e`
 
 - **STYLE.md ref**: §10 (FIXME tracking)
 - **Files**: `dev-commons/bin/find-fixmes.sh`,
@@ -237,7 +237,7 @@ Reviewer fills the `Resolution` column on each finding before Phase 6.
   template again".
 - **Fix proposal**: add `(^|/)template-[^/]+/` to the exclusion
   regex. Templates are meta by definition.
-- **Resolution**: _________
+- **Resolution**: `fix` (see Done line below)
 
 ## Items audited and clean
 
@@ -283,6 +283,20 @@ defensive cleanups and a STYLE.md amendment.
 
 ## Reviewer notes
 
-(Reviewer fills this section with any cross-cutting decisions, e.g.
-"defer all M-series until after the NaimorOSS push" or "fix all
-HIGH this week, treat MEDIUM as a separate audit pass".)
+Reviewer (2026-05-01): "They are pretty small and of manageable size.
+Take care of all and commit / push and we call it a day."
+
+All 10 findings resolved in same-day commits. Per-repo summary:
+
+- `dev-commons@fa4087e` — L2 (STYLE §4 sourced-files note),
+  L3 (find-fixmes template-* exclusion), M4 (HANDOFF.md added)
+- `lab-kit@1a8d86c` — M2 (CLAUDE+HANDOFF), M3 (README "Where do I
+  start?"), L1 (.gitignore canonical set)
+- `lab-router@707cb46` — M1 (--arch flag), M2 (CLAUDE+HANDOFF),
+  M3 (README "Where do I start?"), L1 (.gitignore canonical set)
+- `samba-addc-appliance@0b4f073` — H1 (netplan dhcp-identifier:mac),
+  H2 (.gitignore *creds*), H3 (operator-facing soften), M1 (--arch flag)
+- `smb-proxy-appliance@e1cc86a` — H3 (operator-facing soften incl.
+  §21B ixgbevf warning), M1 (--arch flag)
+
+Index in `audits/README.md` updated to status: complete.
