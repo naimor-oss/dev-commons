@@ -35,6 +35,58 @@ usage() {
     sed -n '/^# Usage:/,/^$/p' "$0" | sed 's/^# \{0,1\}//'
 }
 
+# Strict regex matches the formal §10 form. Loose adds the common
+# informal forms; the categorization in the report distinguishes them.
+# Module-scope constants so the helpers below and the main loop share
+# one definition.
+readonly STRICT_RE='FIXME\(remove-when-fixed\)'
+readonly LOOSE_RE='FIXME|TODO|XXX|HACK'
+
+# Categorize one match content. Echoes one of:
+#   remove-when-fixed | fixme | todo | xxx-hack
+# Pure function — no globals read or written, no I/O. Tested by
+# tests/unit-helpers.sh.
+fixme_category() {
+    local content="$1"
+    if grep -qE "$STRICT_RE" <<< "$content"; then
+        echo "remove-when-fixed"
+    elif grep -qE 'FIXME' <<< "$content"; then
+        echo "fixme"
+    elif grep -qE 'TODO' <<< "$content"; then
+        echo "todo"
+    else
+        echo "xxx-hack"
+    fi
+}
+
+# True (rc=0) if the given path looks like a meta-file that *talks
+# about* FIXMEs rather than carrying them — STYLE.md (defines the
+# form), PUBLISH-CHECKLIST.md (reasons about it), the decisions/ ADRs
+# and audits/ reports (may cite past FIXMEs), the template-* skeletons
+# (which describe the form to template users), and find-fixmes.sh
+# itself (regex literals would self-match). Pattern matches both
+# bare-filename (when run from inside the repo) and path-prefixed
+# forms.
+#
+# Return codes (per shell convention):
+#   0 = is a meta path (should be EXCLUDED from FIXME report)
+#   1 = is a real path (should be INCLUDED)
+is_meta_path() {
+    local path="$1"
+    [[ "$path" =~ (^|/)(PUBLISH-CHECKLIST|STYLE)\.md$ ]]    && return 0
+    [[ "$path" =~ (^|/)find-fixmes\.sh$ ]]                  && return 0
+    [[ "$path" =~ (^|/)(decisions|audits)/.*\.md$ ]]        && return 0
+    [[ "$path" =~ (^|/)template-[^/]+/ ]]                   && return 0
+    return 1
+}
+
+# Library mode: when sourced (not executed), define helpers and stop
+# here so tests can call them without running the trawl. The standard
+# bash sourced-vs-executed check.
+if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+    return 0
+fi
+
 while [[ $# -gt 0 ]]; do
     case "$1" in
         -d|--parent-dir)  PARENT_DIR="$2"; shift 2 ;;
@@ -60,16 +112,11 @@ else
     BOLD=''; RST=''; DIM=''; RED=''; YELLOW=''; CYAN=''
 fi
 
-# Strict regex matches the formal §10 form. Loose adds the common
-# informal forms; the categorization in the report distinguishes them.
-strict_re='FIXME\(remove-when-fixed\)'
-loose_re='FIXME|TODO|XXX|HACK'
-
 if [[ $STRICT -eq 1 ]]; then
-    re="$strict_re"
+    re="$STRICT_RE"
     printf '%sfind-fixmes%s — strict mode (FIXME(remove-when-fixed) only)\n\n' "$BOLD" "$RST"
 else
-    re="($strict_re|$loose_re)"
+    re="($STRICT_RE|$LOOSE_RE)"
     printf '%sfind-fixmes%s — all categories\n\n' "$BOLD" "$RST"
 fi
 
@@ -88,9 +135,11 @@ for r in "${repos[@]}"; do
     # itself (regex literals would self-match). Pattern matches both
     # bare-filename (when run from inside the repo) and path-prefixed
     # forms.
+    # Trawl every tracked file, then filter via is_meta_path so the
+    # exclusion logic lives in one tested place (not a long grep -vE
+    # whose intent rots).
     matches=$(git ls-files -z 2>/dev/null \
         | xargs -0 grep -EnH "$re" 2>/dev/null \
-        | grep -vE '(^|/)(PUBLISH-CHECKLIST|STYLE)\.md:|(^|/)find-fixmes\.sh:|(^|/)(decisions|audits)/.*\.md:|(^|/)template-[^/]+/' \
         || true)
 
     [[ -z "$matches" ]] && continue
@@ -99,7 +148,6 @@ for r in "${repos[@]}"; do
 
     while IFS= read -r line; do
         [[ -z "$line" ]] && continue
-        total=$((total + 1))
 
         # line format: <path>:<lineno>:<content>
         path=${line%%:*}
@@ -107,16 +155,17 @@ for r in "${repos[@]}"; do
         lineno=${rest%%:*}
         content=${rest#*:}
 
-        # Categorize: strict form first, then loose forms.
-        if grep -qE "$strict_re" <<< "$content"; then
-            tag="${RED}REMOVE-WHEN-FIXED${RST}"
-        elif grep -qE 'FIXME' <<< "$content"; then
-            tag="${YELLOW}FIXME${RST}            "
-        elif grep -qE 'TODO' <<< "$content"; then
-            tag="${CYAN}TODO${RST}             "
-        else
-            tag="${DIM}XXX/HACK${RST}         "
-        fi
+        # Skip meta-paths (STYLE.md, decisions/, this script, etc.)
+        is_meta_path "$path" && continue
+
+        total=$((total + 1))
+
+        case "$(fixme_category "$content")" in
+            remove-when-fixed) tag="${RED}REMOVE-WHEN-FIXED${RST}" ;;
+            fixme)             tag="${YELLOW}FIXME${RST}            " ;;
+            todo)              tag="${CYAN}TODO${RST}             " ;;
+            xxx-hack|*)        tag="${DIM}XXX/HACK${RST}         " ;;
+        esac
 
         # File age — last commit touching this file. Skip if not in git.
         age=$(git log -1 --format='%cs' -- "$path" 2>/dev/null || echo '?')
