@@ -92,11 +92,24 @@ prescribe.
 
 ## Status notes
 
-- Org `naimor-oss` is not yet created on GitHub as of this writing.
-- No repo has been pushed to a remote yet.
-- This ADR documents the decision so it survives until enacted; it
-  does not reflect current GitHub state.
 - Org name was finalized 2026-05-07 from earlier working name
   `NaimorOSS` to lowercase-hyphenated `naimor-oss` — the org
   doesn't have separate branding or its own site, so OSS-style
   naming is the right register.
+- Org `naimor-oss` was created on GitHub 2026-05-07.
+- All five sibling repos plus the org's `.github` profile repo
+  pushed to `naimor-oss` 2026-05-07. See
+  [`../PUBLISH-CHECKLIST.md`](../PUBLISH-CHECKLIST.md) per-publish
+  log for the timeline.
+- Pre-existing public copies of three sibling repos sat under the
+  owner's personal account `github.com/hooman/*` from 2026-05-02
+  to 2026-05-07. Those repos predated the publish-prep
+  generalization (commits b611c01 / 068f64f / fefb90b on
+  2026-05-07) and contained the original use-case-specific
+  references. They were deleted before the corresponding
+  `naimor-oss/*` first push so the only public history is the
+  post-generalization one. External archival caches (Wayback,
+  search-engine indexes) may retain copies of the old content;
+  no further action planned beyond rotation that already
+  happened (see PUBLISH-CHECKLIST §1 — the credentials in those
+  old copies were already operationally neutered).

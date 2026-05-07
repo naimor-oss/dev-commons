@@ -151,14 +151,17 @@ Implication for current work:
 
 ## Publication and ownership
 
-These tools are open-source-ready in posture but not yet published.
-When they are pushed to GitHub, they go to a dedicated org for
+These tools are published as open source under a dedicated org for
 workplace open-source — not the owner's personal account, and not
 mixed with private/proprietary work.
 
-Org name: **`naimor-oss`** (custom domain `oss.naimorinc.com`).
-See [`decisions/0001-github-org-naimor-oss.md`](decisions/0001-github-org-naimor-oss.md)
-for the full rationale and consequences.
+Org: **[`naimor-oss`](https://github.com/naimor-oss)** (custom
+domain `oss.naimorinc.com` planned). All five sibling repos plus
+the org's `.github` profile repo went live 2026-05-07. See
+[`decisions/0001-github-org-naimor-oss.md`](decisions/0001-github-org-naimor-oss.md)
+for the full rationale and consequences and
+[`PUBLISH-CHECKLIST.md`](PUBLISH-CHECKLIST.md) for the
+per-publish log.
 
 Pre-publish hygiene runs through
 [`PUBLISH-CHECKLIST.md`](PUBLISH-CHECKLIST.md). The known

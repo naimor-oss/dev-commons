@@ -130,4 +130,9 @@ is recoverable.
 
 | Date | Repo | Pushed by | Notes |
 | --- | --- | --- | --- |
-| _none yet_ | | | |
+| 2026-05-07 | `naimor-oss/.github` | hooman | Org profile repo. First push to the new `naimor-oss` org. |
+| 2026-05-07 | `naimor-oss/dev-commons` | hooman | First push. |
+| 2026-05-07 | `naimor-oss/lab-kit` | hooman | First push. Also: pre-existing `hooman/lab-kit` (pushed 2026-05-02 with pre-generalization history) was deleted before this push. |
+| 2026-05-07 | `naimor-oss/lab-router` | hooman | First push. Pre-existing `hooman/lab-router` deleted before this push. |
+| 2026-05-07 | `naimor-oss/samba-addc-appliance` | hooman | First push. Pre-existing `hooman/samba-addc-appliance` deleted before this push. |
+| 2026-05-07 | `naimor-oss/smb-proxy-appliance` | hooman | First push. |
