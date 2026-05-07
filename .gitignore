@@ -25,7 +25,10 @@ Temporary Items
 .apdisk
 
 # Private local coding-agent workspaces and settings.
-.claude/
+# .claude/agents/ is excepted: subagent definitions are durable project
+# knowledge, not working notes, and belong in version control.
+.claude/*
+!.claude/agents/
 .codex/
 .cursor/
 .continue/
