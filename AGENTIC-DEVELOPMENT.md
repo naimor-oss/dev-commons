@@ -78,24 +78,30 @@ Expected sibling repos:
 
 ```text
 Debian-SAMBA/
-  lab-kit/
-  lab-router/
-  samba-addc-appliance/
+  dev-commons/             meta + tooling + templates
+  lab-kit/                 reusable lab harness
+  lab-router/              reusable router VM builder
+  samba-addc-appliance/    Samba AD DC appliance + scenarios
+  smb-proxy-appliance/     SMB1<->SMB3 proxy appliance + scenarios
 ```
 
 Dependency direction:
 
 ```text
 samba-addc-appliance
-  uses lab-kit
-  uses lab-router for lab networking
+smb-proxy-appliance
+  use lab-kit
+  use lab-router for lab networking
 
 lab-kit
   may provision lab-router
-  does not know Samba internals
+  does not know Samba or proxy internals
 
 lab-router
-  does not depend on Samba or lab-kit
+  does not depend on any appliance or lab-kit
+
+dev-commons
+  referenced by all siblings; ships no runtime code
 ```
 
 ## Suggested Workflow
@@ -161,18 +167,22 @@ fixes.
 
 ## Sanity Checks Before Publishing
 
-Run these from the parent directory when all three sibling repos exist:
+Run these from the parent directory when all sibling repos are present:
 
 ```bash
 (cd samba-addc-appliance && bash -n prepare-image.sh samba-sconfig.sh lab/run-scenario.sh lab/scenarios/*.sh)
+(cd smb-proxy-appliance && bash -n prepare-image.sh smbproxy-sconfig.sh lab/run-scenario.sh lab/scenarios/*.sh tests/unit-helpers.sh)
 (cd lab-kit && bash -n bin/run-scenario.sh scenarios/common/*.sh)
 (cd lab-router && bash -n scripts/stage-router-artifacts.sh)
+bash dev-commons/bin/sanity-check.sh
 ```
 
 Check repo state:
 
 ```bash
+git -C dev-commons status -sb
 git -C samba-addc-appliance status -sb
+git -C smb-proxy-appliance status -sb
 git -C lab-kit status -sb
 git -C lab-router status -sb
 ```
@@ -180,7 +190,7 @@ git -C lab-router status -sb
 Optional text hygiene:
 
 ```bash
-LC_ALL=C rg -n "[^[:ascii:]]" samba-addc-appliance lab-kit lab-router
+LC_ALL=C rg -n "[^[:ascii:]]" dev-commons samba-addc-appliance smb-proxy-appliance lab-kit lab-router
 ```
 
 Non-ASCII is not forbidden when intentional, but new public docs should default

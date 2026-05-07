@@ -67,6 +67,13 @@ A few things specific to a meta-repo:
   in two appliance repos in a similar shape, promote it to the
   template here.
 
+## Checks
+
+```bash
+bash bin/sanity-check.sh
+bash -n bin/find-fixmes.sh bin/sibling-status.sh bin/sanity-check.sh
+```
+
 ## Vendor-specific notes
 
 ### Claude Code
