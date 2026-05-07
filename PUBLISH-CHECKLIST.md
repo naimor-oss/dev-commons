@@ -1,8 +1,8 @@
 # Pre-Publish Checklist
 
 Run this before pushing any sibling repo to a public remote (today:
-the planned `NaimorOSS` GitHub org — see
-[`decisions/0001-github-org-naimoross.md`](decisions/0001-github-org-naimoross.md)).
+the planned `naimor-oss` GitHub org — see
+[`decisions/0001-github-org-naimor-oss.md`](decisions/0001-github-org-naimor-oss.md)).
 
 The checklist is intentionally short and biased toward "stop and
 think" rather than mechanized scanning. A linter would catch the
@@ -36,19 +36,19 @@ Any literal-looking credential is a stop. Required actions:
 
 **Known instance** (resolved 2026-05-01):
 `smb-proxy-appliance/docs/sketch-smb1-smb3-proxy.sh` previously
-contained a real WS2008 backend password for `pfuser`. The
-production credential was rotated 2026-05-01 and the literal value
-in the file replaced with the placeholder
+contained a real legacy-backend password for the example backend
+user. The production credential was rotated 2026-05-01 and the
+literal value in the file replaced with the placeholder
 `<ROTATED-2026-05-01-see-internal-vault>`. Git history retains the
 old literal but it is operationally neutered. No further action
 needed before publishing the proxy repo on this account.
 
 ### 2. Workplace-identifying content
 
-The org name (`NaimorOSS`) and domain (`oss.naimorinc.com`) make
+The org name (`naimor-oss`) and domain (`oss.naimorinc.com`) make
 workplace identity intentional. But check that internal hostnames,
-private IPs, employee names/emails, and similar haven't drifted in
-where they aren't useful.
+private IPs, employee names/emails, and use-case-specific share
+or user names haven't drifted in where they aren't useful.
 
 ```bash
 git grep -nE 'naimor|naimorinc' -- ':!*.md' ':!docs/sketch*'
@@ -57,8 +57,12 @@ git grep -nE '\b(192\.168|10\.|172\.(1[6-9]|2[0-9]|3[01]))' \
 ```
 
 Lab IPs (`10.10.10.0/24`) and intentional examples are fine — they're
-disposable. Production IPs (`192.168.0.x`, `172.29.137.x`) showing
-up outside `docs/sketch*` and `lab/` warrant a look.
+disposable. Production IPs showing up outside `docs/sketch*` and
+`lab/` warrant a look.
+
+Sample names in tests and examples should be generic
+(`Engineering`, `engineering_user`, `Sample`, etc.), not
+workplace-internal share names.
 
 ### 3. Operator-facing surface check
 
@@ -107,13 +111,13 @@ After the first push:
 
 ## Org-level gates (one-time, before first repo lands)
 
-Before pushing the first sibling to `NaimorOSS`:
+Before pushing the first sibling to `naimor-oss`:
 
-- Org created on GitHub with name `NaimorOSS`
+- Org created on GitHub with name `naimor-oss`
 - DNS for `oss.naimorinc.com` configured per GitHub Pages docs
-  (CNAME → `naimoross.github.io`)
+  (CNAME → `naimor-oss.github.io`)
 - A landing site lives at `oss.naimorinc.com` — either
-  `NaimorOSS/.github` profile README or `NaimorOSS/oss-site`
+  `naimor-oss/.github` profile README or `naimor-oss/oss-site`
   Pages repo. One-page; lists the projects, frames the org's
   scope, links into the per-repo READMEs.
 - Org-level security: 2FA required for all members, dependabot

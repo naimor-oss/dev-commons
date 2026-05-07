@@ -21,4 +21,4 @@ Keep entries short. ADRs are journal entries, not specifications.
 
 | # | Title | Status |
 | --- | --- | --- |
-| [0001](0001-github-org-naimoross.md) | GitHub org for the open-source workplace tooling | accepted |
+| [0001](0001-github-org-naimor-oss.md) | GitHub org for the open-source workplace tooling | accepted |

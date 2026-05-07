@@ -93,7 +93,7 @@ echo "== is_meta_path =="
 check_meta "bare STYLE.md is meta"           "meta" "STYLE.md"
 check_meta "STYLE.md under repo is meta"     "meta" "dev-commons/STYLE.md"
 check_meta "PUBLISH-CHECKLIST.md is meta"    "meta" "dev-commons/PUBLISH-CHECKLIST.md"
-check_meta "decisions/0001-foo.md is meta"   "meta" "decisions/0001-naimoross-org.md"
+check_meta "decisions/0001-foo.md is meta"   "meta" "decisions/0001-naimor-oss-org.md"
 check_meta "audits/2026-04.md is meta"       "meta" "audits/2026-04-style-sweep.md"
 check_meta "find-fixmes.sh is meta"          "meta" "bin/find-fixmes.sh"
 check_meta "template-appliance-virtualized/foo.sh is meta" \

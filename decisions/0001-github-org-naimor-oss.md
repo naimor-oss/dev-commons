@@ -1,7 +1,7 @@
 # 0001 — GitHub org for the open-source workplace tooling
 
 **Status**: accepted
-**Date**: 2026-05-01
+**Date**: 2026-05-01 (org name finalized 2026-05-07)
 
 ## Context
 
@@ -28,14 +28,16 @@ expectation of partial outsourcing of IT operations within
 ## Decision
 
 Create a dedicated GitHub organization for the open-source
-workplace tooling. Working name: **`NaimorOSS`**.
+workplace tooling. Org name: **`naimor-oss`** — lowercase with a
+hyphen, matching the OSS-style convention rather than treating the
+org as a separate brand.
 
-- Repos are pushed to `github.com/NaimorOSS/<repo-name>`, never to
+- Repos are pushed to `github.com/naimor-oss/<repo-name>`, never to
   the owner's personal account.
 - A custom domain `oss.naimorinc.com` is configured to point at the
   org's GitHub Pages site.
 - The org's Pages site (built from a small `oss-site` repo or from
-  `NaimorOSS/.github` profile README) provides a one-page landing
+  `naimor-oss/.github` profile README) provides a one-page landing
   with the project listing, links into the per-repo READMEs, and
   the "what these tools are and what they're not" framing.
 
@@ -48,7 +50,7 @@ workplace tooling. Working name: **`NaimorOSS`**.
   layout is a *local checkout* convention, not a published-URL
   convention.
 - Where docs reference a repo by URL (rare today), use
-  `https://github.com/NaimorOSS/<repo>` once the org exists; until
+  `https://github.com/naimor-oss/<repo>` once the org exists; until
   then, leave the cross-references as relative paths.
 - New cross-referencing docs (e.g. issue tracker links, "report a
   bug" guidance) wait until the org is set up before being added.
@@ -56,15 +58,16 @@ workplace tooling. Working name: **`NaimorOSS`**.
 ### For pre-publish hygiene
 
 `PUBLISH-CHECKLIST.md` (in this repo) is the durable gate. Every
-repo passes through it before its first push to `NaimorOSS`. The
-ixgbevf credentials note (production WS2008 backend password
-embedded in `smb-proxy-appliance/docs/sketch-smb1-smb3-proxy.sh`)
-is the canonical example of why the checklist exists.
+repo passes through it before its first push to `naimor-oss`. A
+historical credential leak (a real legacy-backend password embedded
+in `smb-proxy-appliance/docs/sketch-smb1-smb3-proxy.sh`, since
+rotated and replaced with a placeholder) is the canonical example
+of why the checklist exists.
 
 ### For the builder/operator boundary
 
 Public org membership lists are visible. Future outsourced helpers
-should NOT be added to `NaimorOSS` — they don't need write or
+should NOT be added to `naimor-oss` — they don't need write or
 read access to source repos (per `CONTEXT.md` §"the boundary that
 matters most"). If they do need read access to specific repos for
 operational reasons, prefer:
@@ -78,10 +81,9 @@ operational reasons, prefer:
 
 Some future tools may not be open-source-ready (proprietary
 business logic, customer data handling). Those should NOT live in
-`NaimorOSS`. Either:
+`naimor-oss`. Either:
 
-- A separate private GitHub org (e.g. `Naimor` for the closed
-  side), or
+- A separate private GitHub org for the closed-side, or
 - A self-hosted git server, or
 - Stay in personal accounts with private visibility.
 
@@ -90,7 +92,11 @@ prescribe.
 
 ## Status notes
 
-- Org `NaimorOSS` is not yet created on GitHub as of this writing.
+- Org `naimor-oss` is not yet created on GitHub as of this writing.
 - No repo has been pushed to a remote yet.
 - This ADR documents the decision so it survives until enacted; it
   does not reflect current GitHub state.
+- Org name was finalized 2026-05-07 from earlier working name
+  `NaimorOSS` to lowercase-hyphenated `naimor-oss` — the org
+  doesn't have separate branding or its own site, so OSS-style
+  naming is the right register.

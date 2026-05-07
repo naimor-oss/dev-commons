@@ -17,7 +17,7 @@ You need three names:
 | `<APPLIANCE-NAME>` | repo / directory name (lowercase-hyphenated) | `smb-proxy-appliance` |
 | `<APPLIANCE-SHORT>` | short script-prefix (lowercase, no hyphens) | `smbproxy` |
 | `<APPLIANCE-TITLE>` | human-readable name | `SMB1↔SMB3 Proxy Appliance` |
-| `<APPLIANCE-PURPOSE>` | one-line purpose sentence | `Front a hardened WS2008 SP2 file server with strict-locking SMB3 semantics for AD-joined clients.` |
+| `<APPLIANCE-PURPOSE>` | one-line purpose sentence | `Front a legacy SMB1 file server with strict-locking SMB3 semantics for AD-joined clients.` |
 
 Conventions in use today:
 
@@ -105,14 +105,14 @@ After copying, walk through each file with `git diff` and tighten:
 - Adjust the per-NIC topology (single NIC vs dual NIC).
 - Adjust the dnsmasq reservation MAC and IP (and remember to add
   the matching entry to `lab-router/configs/samba-addc.yaml` —
-  see `dev-commons/decisions/0001-github-org-naimoross.md` history
+  see `dev-commons/decisions/0001-github-org-naimor-oss.md` history
   for why and how).
 - Adjust default values to match the new appliance's purpose.
 
 ## Step 6 — Pre-publish review
 
-Before pushing to a remote (which today means the `NaimorOSS` org —
-see `dev-commons/decisions/0001-github-org-naimoross.md`), walk
+Before pushing to a remote (which today means the `naimor-oss` org —
+see `dev-commons/decisions/0001-github-org-naimor-oss.md`), walk
 through `dev-commons/PUBLISH-CHECKLIST.md`. The credentials sweep
 is the most important check.
 

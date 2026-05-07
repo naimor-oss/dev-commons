@@ -156,16 +156,17 @@ When they are pushed to GitHub, they go to a dedicated org for
 workplace open-source — not the owner's personal account, and not
 mixed with private/proprietary work.
 
-Working name for the org: **`NaimorOSS`** (custom domain
-`oss.naimorinc.com`). See
-[`decisions/0001-github-org-naimoross.md`](decisions/0001-github-org-naimoross.md)
+Org name: **`naimor-oss`** (custom domain `oss.naimorinc.com`).
+See [`decisions/0001-github-org-naimor-oss.md`](decisions/0001-github-org-naimor-oss.md)
 for the full rationale and consequences.
 
 Pre-publish hygiene runs through
 [`PUBLISH-CHECKLIST.md`](PUBLISH-CHECKLIST.md). The known
-pre-publish blockers (e.g. the WS2008 backend credential
-embedded in `smb-proxy-appliance/docs/sketch-smb1-smb3-proxy.sh`)
-are tracked there so they don't get forgotten.
+pre-publish blockers (e.g. the historical legacy-backend
+credential that was embedded in
+`smb-proxy-appliance/docs/sketch-smb1-smb3-proxy.sh`, since
+rotated and replaced) are tracked there so they don't get
+forgotten.
 
 Not all future tooling is open-source-ready. The decision ADR
 sketches what to do for closed-side work when it appears.

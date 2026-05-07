@@ -10,7 +10,7 @@
 #   - ahead / behind vs origin/<branch> if a remote exists
 #   - one-line head commit
 #   - one-line warning if the repo has no remote yet (most often: held
-#     pending NaimorOSS org creation per dev-commons/decisions/0001-*)
+#     pending naimor-oss org creation per dev-commons/decisions/0001-*)
 #
 # Output is ANSI-colored when stdout is a terminal; pipe-friendly
 # otherwise. Exit 0 always (this is informational, not a gate).
