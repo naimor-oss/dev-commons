@@ -1,6 +1,6 @@
 # Sibling-Repo Layout
 
-This project lives in five sibling repositories developed side by side
+This project lives in six sibling repositories developed side by side
 locally:
 
 ```text
@@ -8,6 +8,7 @@ Debian-SAMBA/
   dev-commons/             this repo — meta + tooling + templates
   lab-kit/                 reusable lab orchestration (code)
   lab-router/              reusable router VM builder (code)
+  appliance-core/          shared appliance runtime libs + blank base appliance
   samba-addc-appliance/    Samba AD DC appliance + scenarios
   smb-proxy-appliance/     SMB1<->SMB3 proxy appliance + scenarios
 ```
@@ -78,6 +79,28 @@ Boundary: depends on neither lab-kit nor any appliance repo. Out of
 scope: VPN, captive portal, WireGuard, firewall zones beyond NAT +
 lab LAN.
 
+### `appliance-core`
+
+Shared bash libraries vendored into product appliances at
+image-prep time, plus a deployable blank Debian appliance that
+exists primarily to test those libraries across the
+SUPPORTED-ENVIRONMENTS matrix. See ADR
+[`decisions/0002-appliance-core.md`](decisions/0002-appliance-core.md)
+for the why and the design draft at
+[`proposals/appliance-core-design.md`](proposals/appliance-core-design.md)
+for the lib contracts and migration plan.
+
+- `lib/*.sh` + `lib/VERSION` — vendored at consumer prep time.
+- `prepare-image.sh` + `core-sconfig.sh` — the blank appliance.
+- `lab/scenarios/*.sh` — integration tests targeting the
+  blank image.
+- `tests/unit/*.bats` — bash unit tests for each lib.
+
+Boundary: the libraries are infrastructure surfaces shared by
+two-or-more appliances (network detection, hostname change, apt
+helpers, MOTD, console wizard). Product-specific helpers stay in
+their product repos.
+
 ### `samba-addc-appliance`
 
 Samba AD DC appliance and its Samba-specific tests.
@@ -124,12 +147,15 @@ own AD DC. Cross-cutting docs live in `dev-commons`.
 samba-addc-appliance       smb-proxy-appliance
   consumes lab-kit             consumes lab-kit
   consumes lab-router          consumes lab-router (router only)
+  vendors appliance-core       vendors appliance-core
+    libs at prep time            libs at prep time
                                relies on samba-addc-appliance
                                   *lab environment* at runtime
                                   (not on its source repo)
 
-lab-kit                     lab-router
-  no upstream deps             no upstream deps
+appliance-core              lab-kit                     lab-router
+  consumes lab-kit            no upstream deps             no upstream deps
+  consumes lab-router
 
 dev-commons
   no runtime deps; referenced by every sibling's AGENTS.md for shared
