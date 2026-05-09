@@ -74,6 +74,7 @@ for r in "${repos[@]}"; do
             find ./lab -maxdepth 1 -type f -name '*.sh' 2>/dev/null
             find ./lab/scenarios -maxdepth 1 -type f -name '*.sh' 2>/dev/null
             find ./bin -maxdepth 1 -type f -name '*.sh' 2>/dev/null
+            find ./lib -maxdepth 1 -type f -name '*.sh' 2>/dev/null
             find ./scripts -maxdepth 1 -type f -name '*.sh' 2>/dev/null
             find ./hypervisors -type f -name '*.sh' 2>/dev/null
         } | sort -u
