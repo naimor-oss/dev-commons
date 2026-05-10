@@ -98,4 +98,97 @@ else
     printf '  skip — smb-proxy unit-helpers.sh not present\n'
 fi
 
+# 5. Source-level contract guards. These pin design decisions
+# documented in samba-addc-appliance/docs/DFS-N.md and
+# smb-proxy-appliance/docs/LAB-TESTING.md so a refactor that
+# silently violates the protocol fails preflight before any VM
+# run. Each guard is a single grep over the runtime source — the
+# protocol claim is encoded as the search pattern.
+step "5. design-contract source guards"
+
+addc_sconfig="$PARENT_DIR/samba-addc-appliance/samba-sconfig.sh"
+proxy_sconfig="$PARENT_DIR/smb-proxy-appliance/smbproxy-sconfig.sh"
+
+guard_grep() {
+    # guard_grep <label> <file> <pattern>
+    # Asserts <pattern> matches at least once in <file> (extended regex).
+    local label="$1" file="$2" pat="$3"
+    if [[ ! -f "$file" ]]; then
+        printf '  skip %s (file not present)\n' "$label"
+        return
+    fi
+    if grep -qE -- "$pat" "$file"; then
+        pass "$label"
+    else
+        fail "$label — pattern '$pat' not found in $(basename "$file")"
+    fi
+}
+
+guard_grep_absent() {
+    # guard_grep_absent <label> <file> <pattern>
+    # Asserts <pattern> matches ZERO times in <file>.
+    local label="$1" file="$2" pat="$3"
+    if [[ ! -f "$file" ]]; then
+        printf '  skip %s (file not present)\n' "$label"
+        return
+    fi
+    if grep -qE -- "$pat" "$file"; then
+        fail "$label — forbidden pattern '$pat' found in $(basename "$file")"
+    else
+        pass "$label"
+    fi
+}
+
+# DFS-N.md §6.1 — lock at /run, never /tmp.
+guard_grep "DFS-N: lock path under /run" \
+    "$addc_sconfig" \
+    'DFS_LOCK=.*/run/samba-dfs-update\.lock'
+guard_grep_absent "DFS-N: no /tmp lock" \
+    "$addc_sconfig" \
+    '/tmp/samba-dfs(-update)?\.lock'
+
+# DFS-N.md §3 — AD container is "Dfs-Configuration", not the
+# textbook-but-wrong "Dfsn-Configuration". Verified against a live
+# WS2025 forest; the wrong name passes lint and silently returns
+# zero LDAP results.
+guard_grep "DFS-N: AD container Dfs-Configuration" \
+    "$addc_sconfig" \
+    'CN=Dfs-Configuration,CN=System'
+guard_grep_absent "DFS-N: no Dfsn-Configuration typo" \
+    "$addc_sconfig" \
+    'Dfsn-Configuration'
+
+# DFS-N.md §6.10 — reload is via smbcontrol (not systemctl reload
+# samba-ad-dc inside dfs-update; that's reserved for [global] edits).
+guard_grep "DFS-N: smbcontrol reload-config in dfs-update path" \
+    "$addc_sconfig" \
+    'smbcontrol [a-z]+ reload-config'
+
+# DFS-N.md §8 — service hardening directives and timer settings.
+guard_grep "DFS-N: ProtectSystem=strict in unit"          "$addc_sconfig" '^ProtectSystem=strict'
+guard_grep "DFS-N: NoNewPrivileges=yes in unit"            "$addc_sconfig" '^NoNewPrivileges=yes'
+guard_grep "DFS-N: MemoryDenyWriteExecute=yes in unit"     "$addc_sconfig" '^MemoryDenyWriteExecute=yes'
+guard_grep "DFS-N: RestrictAddressFamilies=… in unit"      "$addc_sconfig" '^RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6'
+guard_grep "DFS-N: timer Persistent=true"                  "$addc_sconfig" '^Persistent=true'
+guard_grep "DFS-N: timer RandomizedDelaySec set"           "$addc_sconfig" '^RandomizedDelaySec='
+
+# smb-proxy LAB-TESTING.md — force-user contract corners.
+guard_grep "proxy: force user written as username (not numeric UID)" \
+    "$proxy_sconfig" \
+    'force user = \$\{?FRONT_FORCE_USER\}?'
+guard_grep "proxy: AD-collision check via wbinfo --name-to-sid" \
+    "$proxy_sconfig" \
+    'wbinfo --name-to-sid "?\$\{?FRONT_FORCE_USER\}?"?'
+guard_grep "proxy: cifs preexec quotes %S" \
+    "$proxy_sconfig" \
+    'smbproxy-probe-backend "%S"'
+
+# proxy: nosharesock invariant (multi-share creds-isolation
+# defense per AGENTS.md). This is the single most important cifs
+# option after the locking-correct legacy bundle; pin it here
+# even though backend_mount_opts unit tests already cover it.
+guard_grep "proxy: nosharesock in cifs option string" \
+    "$proxy_sconfig" \
+    'nosharesock'
+
 printf '\n%spreflight: ALL CLEAN%s — safe to start a VM run.\n' "$BOLD" "$RST"
