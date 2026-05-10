@@ -48,6 +48,12 @@ fi
 #------------------------------------------------------------------
 # Exclusion list. Each entry has a one-line rationale.
 #------------------------------------------------------------------
+# SC1090 — "ShellCheck can't follow non-constant source" — same root
+#          cause as SC1091; fires when the source path is a variable
+#          (e.g. `source "$SYSVOL_SYNC_CONF"`). Adding this with a
+#          # shellcheck source=... directive per call site is doable
+#          but yields no signal in this codebase (the runtime conf
+#          files live outside the source tree). Excluded globally.
 # SC1091 — "Not following: ./<file>" — sourced paths shellcheck cannot
 #          statically resolve. The lab scripts source vendored
 #          appliance-core libs from runtime paths (/usr/local/lib/...)
@@ -61,7 +67,7 @@ fi
 #          local" cases get flagged on individual functions when the
 #          variable is local-scoped, which this exclusion does not
 #          suppress (the warning shape differs).
-EXCLUDE='SC1091,SC2034'
+EXCLUDE='SC1090,SC1091,SC2034'
 
 #------------------------------------------------------------------
 # File list. Globs and individual paths both work; missing files are
