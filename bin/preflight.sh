@@ -191,4 +191,12 @@ guard_grep "proxy: nosharesock in cifs option string" \
     "$proxy_sconfig" \
     'nosharesock'
 
+# 6. shellcheck (advisory). Skipped with a one-line note when shellcheck
+# is not installed; preflight does not block on shellcheck findings
+# today. Run `bin/shellcheck-all.sh --strict` standalone for a hard
+# gate. Once the project's existing findings are zero, switch the call
+# below to --strict so any new shellcheck warning fails preflight.
+step "6. shellcheck-all (advisory)"
+"$SCRIPT_DIR/shellcheck-all.sh" || true
+
 printf '\n%spreflight: ALL CLEAN%s — safe to start a VM run.\n' "$BOLD" "$RST"
