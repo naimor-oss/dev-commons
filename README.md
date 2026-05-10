@@ -20,9 +20,11 @@ you know what they're protecting against.
 | Understand **why there are five sibling repos** | [`REPO-SPLIT.md`](REPO-SPLIT.md) |
 | See **which hypervisors / arches are validated** | [`SUPPORTED-ENVIRONMENTS.md`](SUPPORTED-ENVIRONMENTS.md) |
 | Check a repo before **publishing it to GitHub** | [`PUBLISH-CHECKLIST.md`](PUBLISH-CHECKLIST.md) |
+| Run the **release gate** before shipping a change | [`RELEASE-GATE.md`](RELEASE-GATE.md) |
 | Look up a **cross-cutting decision** | [`decisions/`](decisions/) |
 | Start a **new appliance repo** | `template-appliance-virtualized/` (or `template-appliance-iot/`) |
 | Run a cross-sibling **sanity check / status / FIXME trawl** | `bin/sanity-check.sh`, `bin/sibling-status.sh`, `bin/find-fixmes.sh` |
+| Run the **no-VM preflight** before any lab scenario | `bin/preflight.sh` |
 
 ## Sibling layout
 
@@ -62,6 +64,7 @@ why.
 | `REPO-SPLIT.md` | Why the project is split across sibling repos |
 | `SUPPORTED-ENVIRONMENTS.md` | Validated-vs-intended hypervisor + arch matrix |
 | `PUBLISH-CHECKLIST.md` | Pre-publish gate for pushing repos to GitHub |
+| `RELEASE-GATE.md` | Preflight + nine-scenario VM gate before shipping a change |
 | `decisions/` | ADR-style log of choices that affect multiple repos |
 | `AGENTS.md` | Agent brief for `dev-commons` itself |
 | `CLAUDE.md` | Compatibility pointer back to `AGENTS.md` |

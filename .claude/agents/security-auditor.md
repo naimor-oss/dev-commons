@@ -14,7 +14,7 @@ You are a security auditor for the Debian-SAMBA appliance family. Review for the
 
 **smb.conf ACLs (proxy appliance)**
 - `valid users` uses SID form (`S-1-5-...`) not symbolic names in default-domain-mode Winbind setups — symbolic `@"DOMAIN\Group"` fails silently in Samba 4.22 under `winbind use default domain = yes`
-- `force user` uses numeric UID not symbolic name — symbolic name resolves to AD account if one exists, causing tree-connect corruption when a local account collides with an AD account (production incident 2026-05-05)
+- `force user` uses the LOCAL USERNAME (e.g. `force user = tubelaser`), not a numeric UID — Samba resolves `force user` via `getpwnam()`, and `getpwnam("1003")` fails even though `getpwuid(1003)` succeeds, causing `NT_STATUS_NO_SUCH_USER` at tree-connect (confirmed 2026-05-07). The AD-collision risk that motivated the original numeric-UID stopgap is now caught at write time: `configure_share` calls `wbinfo --name-to-sid` on the chosen name and REFUSES the configuration (rc=9) before any creds/fstab/smb.conf writes if the name resolves in AD. The cifs `uid=`/`gid=` mount options in `/etc/fstab` continue to be numeric — those are kernel cifs option values, not Samba `force user` resolution.
 - Per-share locking for legacy ISAM profile: `oplocks = no`, `level2 oplocks = no`, `strict locking = yes`, `kernel oplocks = no`, `posix locking = yes`
 
 **cifs mount options**

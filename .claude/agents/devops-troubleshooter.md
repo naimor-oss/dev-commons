@@ -39,7 +39,7 @@ PWSH
 
 **winbind / NSS name collisions**
 - `winbind use default domain = yes` publishes AD accounts under bare lowercase name — any local account with the same name collides
-- `force user = NAME` resolves to AD account if one exists under that name — always use numeric UID instead: `id -u <localuser>`
+- `force user = NAME` is the contract-correct form (Samba's `getpwnam()` requires a name string; numeric UIDs do NOT work — `getpwnam("1003")` returns nothing even when `getpwuid(1003)` succeeds, causing NT_STATUS_NO_SUCH_USER at tree-connect). The AD-collision risk is mitigated by NSS files-first ordering (`passwd: files systemd winbind`) so the local `/etc/passwd` entry wins, AND by `configure_share`'s `wbinfo --name-to-sid` pre-check that REFUSES the configuration with rc=9 if the chosen name resolves in AD. Cifs `uid=`/`gid=` mount options stay numeric (those are kernel cifs option values, not Samba force-user resolution). Diagnose collisions: `wbinfo --name-to-sid "<name>"` should return nothing for a viable force-user name.
 - `valid users = @"DOMAIN\Group"` fails silently in Samba 4.22 under default-domain mode — use SID from `wbinfo --name-to-sid "DOMAIN\Group"`
 - Diagnose: `wbinfo -u`, `wbinfo -g`, `getent passwd <user>`, `id <user>`
 
