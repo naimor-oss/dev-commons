@@ -236,13 +236,38 @@ guard_grep "proxy: nosharesock in cifs option string" \
     "$proxy_sconfig" \
     'nosharesock'
 
-# 6. Static analysis. The current tree is clean at severity=warning
+# 6. Appliance-core compliance: runs the generalized 10-check
+# contract suite against every appliance found in the sibling layout.
+# The checks are documented inline in
+# appliance-core/bin/compliance-check.sh; --list prints the surface.
+# Each check guards against a specific bug class we've actually
+# seen (see the "Guards against" column).
+step "6. appliance-core compliance check"
+compliance_checker="$PARENT_DIR/appliance-core/bin/compliance-check.sh"
+if [[ -x "$compliance_checker" ]]; then
+    for app in samba-addc-appliance smb-proxy-appliance; do
+        appdir="$PARENT_DIR/$app"
+        if [[ -d "$appdir" ]]; then
+            if "$compliance_checker" "$appdir" >/dev/null 2>&1; then
+                pass "$app: compliance clean"
+            else
+                # Re-run with --report so the operator sees which check(s) failed.
+                "$compliance_checker" --report "$appdir" || true
+                fail "$app failed compliance — fix and re-run preflight"
+            fi
+        fi
+    done
+else
+    printf '  skip — appliance-core/bin/compliance-check.sh not present at %s\n' "$compliance_checker"
+fi
+
+# 7. Static analysis. The current tree is clean at severity=warning
 # with the documented exclusion list (SC1090, SC1091, SC2034 — rationale
 # inline in bin/shellcheck-all.sh). Any new finding fails preflight
 # before it reaches a VM run. The wrapper skips with a one-line note
 # (and exits 0) when shellcheck is not installed, so preflight stays
 # green on hosts without it.
-step "6. shellcheck-all (strict)"
+step "7. shellcheck-all (strict)"
 "$SCRIPT_DIR/shellcheck-all.sh" --strict || fail "shellcheck-all reported findings (run bin/shellcheck-all.sh standalone for the full list)"
 
 printf '\n%spreflight: ALL CLEAN%s — safe to start a VM run.\n' "$BOLD" "$RST"

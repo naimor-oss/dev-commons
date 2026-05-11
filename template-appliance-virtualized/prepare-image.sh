@@ -48,6 +48,40 @@ log "Refreshing apt indexes..."
 apt-get update -y
 
 #===============================================================================
+# 0b. VENDOR APPLIANCE-CORE LIBS
+#
+# Copy the shared bash libs from the sibling appliance-core checkout
+# into the canonical vendor path /usr/local/lib/appliance-core/. The
+# sconfig script sources from this path via sentinel guards; without
+# this step, every appcore_* function call falls back to inline
+# behavior.
+#
+# Record the appliance-core commit hash in /etc/appliance-core.provenance
+# so a deployed image can answer "which exact bytes of the lib am I
+# carrying?". The hash is passed via the APPCORE_BUILD_COMMIT env var
+# from the staging script (lab/stage-*-base.sh).
+#===============================================================================
+APPCORE_SRC="${APPCORE_SRC:-../appliance-core/lib}"
+if [[ -d "$APPCORE_SRC" ]]; then
+    log "Vendoring appliance-core libs from $APPCORE_SRC..."
+    install -d -m 0755 /usr/local/lib/appliance-core
+    install -m 0644 "$APPCORE_SRC"/*.sh /usr/local/lib/appliance-core/
+    install -m 0644 "$APPCORE_SRC"/../VERSION /usr/local/lib/appliance-core/VERSION 2>/dev/null || true
+    cat > /etc/appliance-core.provenance <<EOF
+# appliance-core provenance — written by prepare-image.sh on
+# $(date -Is). Records the exact source tree this image was built
+# against.
+appliance-core-version=$(cat "$APPCORE_SRC/../VERSION" 2>/dev/null || echo unknown)
+appliance-core-commit=${APPCORE_BUILD_COMMIT:-unknown}
+build-host=$(hostname)
+build-date=$(date -Is)
+EOF
+    chmod 0644 /etc/appliance-core.provenance
+else
+    log "WARN: appliance-core lib source not found at $APPCORE_SRC — skipping vendor + provenance"
+fi
+
+#===============================================================================
 # 1. REMOVE UNNECESSARY PACKAGES
 #===============================================================================
 # TODO: list packages to purge (cf. samba-addc-appliance for the canonical

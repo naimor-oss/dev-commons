@@ -38,11 +38,55 @@ readonly STATE_DIR="/var/lib/<APPLIANCE-SHORT>"
 readonly DEPLOY_FILE="${STATE_DIR}/deploy.env"
 
 #===============================================================================
-# UTILITIES
+# APPLIANCE-CORE LIB SOURCING
+#
+# prepare-image.sh vendors the appliance-core libs into the canonical
+# /usr/local/lib/appliance-core/ at build time. Sentinel-guarded sourcing
+# here means an older image that's missing one of the libs degrades
+# gracefully (the lib's functions stay undefined and consumers fall back
+# to inline behavior) instead of hard-failing at startup.
 #===============================================================================
-die()  { whiptail --msgbox "FATAL: $*" 10 60; exit 1; }
-info() { whiptail --msgbox "$*" 12 64; }
-yesno(){ whiptail --yesno "$*" 10 60; }
+readonly APPCORE_LIBS="/usr/local/lib/appliance-core"
+if [[ -d "$APPCORE_LIBS" ]]; then
+    [[ -f "$APPCORE_LIBS/identity.sh"  ]] && source "$APPCORE_LIBS/identity.sh"
+    [[ -f "$APPCORE_LIBS/tui.sh"       ]] && source "$APPCORE_LIBS/tui.sh"
+    [[ -f "$APPCORE_LIBS/hostname.sh"  ]] && source "$APPCORE_LIBS/hostname.sh"
+    [[ -f "$APPCORE_LIBS/detect-net.sh" ]] && source "$APPCORE_LIBS/detect-net.sh"
+    [[ -f "$APPCORE_LIBS/apt-helpers.sh" ]] && source "$APPCORE_LIBS/apt-helpers.sh"
+    [[ -f "$APPCORE_LIBS/netconfig.sh" ]] && source "$APPCORE_LIBS/netconfig.sh"
+fi
+
+#===============================================================================
+# UTILITIES
+#
+# info/yesno/die delegate to appliance-core's sized whiptail wrappers
+# when the lib is loaded (auto-sizes from `tput`, capped at 24x100,
+# floored at 10x60). Fallback hand-fixed dimensions preserve behavior
+# on older images that don't have the lib vendored — the same pattern
+# samba-addc and smb-proxy use.
+#===============================================================================
+die() {
+    if command -v appcore_tui_msgbox >/dev/null 2>&1; then
+        appcore_tui_msgbox "FATAL: $*"
+    else
+        whiptail --msgbox "FATAL: $*" 10 60
+    fi
+    exit 1
+}
+info() {
+    if command -v appcore_tui_msgbox >/dev/null 2>&1; then
+        appcore_tui_msgbox "$*"
+    else
+        whiptail --msgbox "$*" 12 64
+    fi
+}
+yesno() {
+    if command -v appcore_tui_yesno >/dev/null 2>&1; then
+        appcore_tui_yesno "$*"
+    else
+        whiptail --yesno "$*" 10 60
+    fi
+}
 
 check_root() {
     if [[ $EUID -ne 0 ]]; then

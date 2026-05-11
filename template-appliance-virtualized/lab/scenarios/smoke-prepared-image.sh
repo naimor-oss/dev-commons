@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # TEMPLATE — does not parse until you replace <APPLIANCE-*> placeholders
 # (see ../../INSTANTIATE.md step 4).
 #

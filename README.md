@@ -22,7 +22,7 @@ you know what they're protecting against.
 | Check a repo before **publishing it to GitHub** | [`PUBLISH-CHECKLIST.md`](PUBLISH-CHECKLIST.md) |
 | Run the **release gate** before shipping a change | [`RELEASE-GATE.md`](RELEASE-GATE.md) |
 | Look up a **cross-cutting decision** | [`decisions/`](decisions/) |
-| Start a **new appliance repo** | `template-appliance-virtualized/` (or `template-appliance-iot/`) |
+| **Scaffold a new appliance repo** from the template | `bin/new-appliance.sh` (template lives at `template-appliance-virtualized/`) |
 | Run a cross-sibling **sanity check / status / FIXME trawl** | `bin/sanity-check.sh`, `bin/sibling-status.sh`, `bin/find-fixmes.sh` |
 | Run the **no-VM preflight** before any lab scenario | `bin/preflight.sh` |
 

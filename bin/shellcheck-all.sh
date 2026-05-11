@@ -82,10 +82,12 @@ declare -a CANDIDATES=(
     "dev-commons/bin/sibling-status.sh"
     "dev-commons/bin/find-fixmes.sh"
     "dev-commons/bin/check-dangerous-cmds.sh"
+    "dev-commons/bin/new-appliance.sh"
 
     # appliance-core
     "appliance-core/prepare-image.sh"
     "appliance-core/core-sconfig.sh"
+    "appliance-core/bin/compliance-check.sh"
     "appliance-core/lib/detect-net.sh"
     "appliance-core/lib/identity.sh"
     "appliance-core/lib/tui.sh"
@@ -100,6 +102,7 @@ declare -a CANDIDATES=(
     "samba-addc-appliance/lab/stage-samba-base.sh"
     "samba-addc-appliance/lab/export-deploy-master.sh"
     "samba-addc-appliance/lab/run-scenario.sh"
+    "samba-addc-appliance/tests/compliance.sh"
 
     # smb-proxy
     "smb-proxy-appliance/prepare-image.sh"
@@ -110,6 +113,7 @@ declare -a CANDIDATES=(
     "smb-proxy-appliance/lab/export-deploy-master.sh"
     "smb-proxy-appliance/lab/run-scenario.sh"
     "smb-proxy-appliance/tests/unit-helpers.sh"
+    "smb-proxy-appliance/tests/compliance.sh"
 )
 
 # Glob-expanded entries: scenarios from both appliances. Globs are
