@@ -172,6 +172,35 @@ guard_grep "DFS-N: RestrictAddressFamilies=… in unit"      "$addc_sconfig" '^R
 guard_grep "DFS-N: timer Persistent=true"                  "$addc_sconfig" '^Persistent=true'
 guard_grep "DFS-N: timer RandomizedDelaySec set"           "$addc_sconfig" '^RandomizedDelaySec='
 
+# DFS-N awareness in firewall ruleset rendering. The hardening pass
+# detects DFS-N state and writes either "ENABLED" or "NOT HOSTED" into
+# the rendered nftables header. Both strings MUST be present in
+# samba-sconfig — they're the two branches of the renderer. Drift
+# (one removed in a refactor) would leave the operator unable to
+# distinguish state. is_dfs_enabled is the helper both branches use.
+guard_grep "DFS-N: is_dfs_enabled helper present"          "$addc_sconfig" '^is_dfs_enabled\(\) \{'
+guard_grep "DFS-N: firewall renderer emits ENABLED state"  "$addc_sconfig" 'DFS-N namespace server: ENABLED'
+guard_grep "DFS-N: firewall renderer emits NOT-HOSTED state" "$addc_sconfig" 'DFS-N namespace server: NOT HOSTED'
+
+# Hostname/realm alignment is invoked from post_provision_setup so
+# /etc/hosts is rewritten under the joined realm (field-reported
+# "lab.test stuck" bug). If a refactor drops the call, the bug
+# returns; pin the call site.
+guard_grep "hostname: post_provision aligns to realm" \
+    "$addc_sconfig" \
+    'appcore_hostname_align_to_realm'
+
+# DOMAIN\\Group input goes through appcore_id_domgroup_* (Phase 1).
+# Pin the wire-in so a future refactor can't accidentally bypass
+# the validator and re-introduce the "Domain Admins" / escape-leak
+# bug at the sudo-grant site.
+guard_grep "domgroup: sudo path validates via appcore" \
+    "$addc_sconfig" \
+    'appcore_id_domgroup_validate'
+guard_grep "domgroup: sudo path formats via appcore" \
+    "$addc_sconfig" \
+    'appcore_id_domgroup_format_sudoers'
+
 # smb-proxy LAB-TESTING.md — force-user contract corners.
 guard_grep "proxy: force user written as username (not numeric UID)" \
     "$proxy_sconfig" \
