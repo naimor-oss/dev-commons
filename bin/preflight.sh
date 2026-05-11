@@ -201,6 +201,22 @@ guard_grep "domgroup: sudo path formats via appcore" \
     "$addc_sconfig" \
     'appcore_id_domgroup_format_sudoers'
 
+# TUI: info/yesno/die delegate to appcore_tui_msgbox/yesno when
+# the lib is loaded (Phase 2). Hand-fixed 12x64 / 10x60 dimensions
+# clipped on wide content; the appcore variants auto-size.
+guard_grep "TUI: samba-addc info() delegates to appcore_tui_msgbox" \
+    "$addc_sconfig" \
+    'appcore_tui_msgbox "\$\*"'
+guard_grep "TUI: samba-addc yesno() delegates to appcore_tui_yesno" \
+    "$addc_sconfig" \
+    'appcore_tui_yesno "\$\*"'
+guard_grep "TUI: smb-proxy info() delegates to appcore_tui_msgbox" \
+    "$proxy_sconfig" \
+    'appcore_tui_msgbox "\$\*"'
+guard_grep "TUI: smb-proxy yesno() delegates to appcore_tui_yesno" \
+    "$proxy_sconfig" \
+    'appcore_tui_yesno "\$\*"'
+
 # smb-proxy LAB-TESTING.md — force-user contract corners.
 guard_grep "proxy: force user written as username (not numeric UID)" \
     "$proxy_sconfig" \
