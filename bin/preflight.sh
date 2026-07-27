@@ -12,7 +12,7 @@
 #      pass also picks up files outside the dirs sanity-check walks
 #      (and isolating these failures by appliance gives clearer
 #      output than the combined sweep).
-#   3. appliance-core: bats tests/unit/ — currently 94 cases over
+#   3. appliance-core: bats tests/unit/ — currently 182 cases over
 #      detect-net, identity, tui, hostname, apt-helpers, netconfig.
 #   4. smb-proxy: bash tests/unit-helpers.sh — pure-function
 #      assertions on share_safe_name, share_name_validate,
