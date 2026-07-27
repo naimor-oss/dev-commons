@@ -81,6 +81,7 @@ Debian-SAMBA/
   dev-commons/             meta + tooling + templates
   lab-kit/                 reusable lab harness
   lab-router/              reusable router VM builder
+  appliance-core/          shared runtime libraries + blank test appliance
   samba-addc-appliance/    Samba AD DC appliance + scenarios
   smb-proxy-appliance/     SMB1<->SMB3 proxy appliance + scenarios
 ```
@@ -92,6 +93,10 @@ samba-addc-appliance
 smb-proxy-appliance
   use lab-kit
   use lab-router for lab networking
+  vendor appliance-core at image-prep time
+
+appliance-core
+  uses lab-kit and lab-router for its blank-appliance lab
 
 lab-kit
   may provision lab-router
@@ -172,6 +177,7 @@ Run these from the parent directory when all sibling repos are present:
 ```bash
 (cd samba-addc-appliance && bash -n prepare-image.sh samba-sconfig.sh lab/run-scenario.sh lab/scenarios/*.sh)
 (cd smb-proxy-appliance && bash -n prepare-image.sh smbproxy-sconfig.sh lab/run-scenario.sh lab/scenarios/*.sh tests/unit-helpers.sh)
+(cd appliance-core && bash -n prepare-image.sh core-sconfig.sh lab/run-scenario.sh lab/scenarios/*.sh)
 (cd lab-kit && bash -n bin/run-scenario.sh scenarios/common/*.sh)
 (cd lab-router && bash -n scripts/stage-router-artifacts.sh)
 bash dev-commons/bin/sanity-check.sh
@@ -181,6 +187,7 @@ Check repo state:
 
 ```bash
 git -C dev-commons status -sb
+git -C appliance-core status -sb
 git -C samba-addc-appliance status -sb
 git -C smb-proxy-appliance status -sb
 git -C lab-kit status -sb

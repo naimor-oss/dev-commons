@@ -212,9 +212,8 @@ git -C samba-addc-appliance push origin main
 git -C smb-proxy-appliance push origin main
 ```
 
-The sibling-status helper (`dev-commons/bin/sibling-status.sh`,
-landing in Phase 3) gives a one-shot view of dirty trees and
-unpushed commits across all five.
+The sibling-status helper (`dev-commons/bin/sibling-status.sh`) gives a
+one-shot view of dirty trees and unpushed commits across all six.
 
 ## Appendix: how the project got to this layout
 
