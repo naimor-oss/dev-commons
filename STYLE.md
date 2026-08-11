@@ -2,8 +2,8 @@
 
 This document codifies the day-to-day coding, scripting, and documentation
 conventions for the sibling-repo family under `Debian-SAMBA/`
-(`dev-commons`, `lab-kit`, `lab-router`, `samba-addc-appliance`,
-`smb-proxy-appliance`, plus future siblings). It is meant for future
+(`dev-commons`, `lab-kit`, `lab-router`, `appliance-core`,
+`samba-addc-appliance`, `smb-proxy-appliance`, plus future siblings). It is meant for future
 maintainers and for any agent — local, vendor, or senior — picking up work
 here.
 
@@ -42,7 +42,9 @@ Debian-SAMBA/
   dev-commons/             this repo — meta + tooling + templates
   lab-kit/                 reusable runner + helpers
   lab-router/              reusable router VM builder
+  appliance-core/          shared runtime libraries + blank test appliance
   samba-addc-appliance/    AD DC appliance + its scenarios
+  smbproxy-session-vfs/    private Samba VFS component + compatibility builds
   smb-proxy-appliance/     SMB1<->SMB3 proxy appliance + its scenarios
 ```
 
@@ -64,7 +66,8 @@ Per-repo top-level structure (where applicable):
 | `test-results/` | Scenario evidence (raw `.log` gitignored, distilled `.md` tracked). |
 
 Dependency direction is enforced by convention: appliances depend on
-`lab-kit` and `lab-router`; neither knows the appliances exist.
+`lab-kit` and `lab-router`; product appliances vendor `appliance-core`;
+the lab and router repos do not know product appliances exist.
 
 ## 2. `.gitignore` conventions
 
@@ -258,7 +261,7 @@ Every scenario file under `lab/scenarios/` defines:
 | `pre_hook` | optional | Idempotent setup (cleanup, prerequisites). |
 | `post_hook` | optional | Evidence collection or cleanup after verification. |
 
-All five take advantage of helpers exported by the `lab-kit` runner:
+These functions take advantage of helpers exported by the `lab-kit` runner:
 `ssh_vm`, `ssh_host`, `scp_to_vm`, `say`, `step`, plus the `LAB_VM_*` /
 `LAB_HV_*` env vars.
 
