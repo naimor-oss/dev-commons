@@ -12,7 +12,7 @@ naturally live in any one of them.
 2. **`STYLE.md`** — coding, scripting, doc, and test conventions.
 3. **`AGENTIC-DEVELOPMENT.md`** — multi-agent process and
    ownership patterns.
-4. **`REPO-SPLIT.md`** — why there are six sibling repos and how
+4. **`REPO-SPLIT.md`** — why there are seven sibling repos and how
    they relate.
 5. **`SUPPORTED-ENVIRONMENTS.md`** — the validated-vs-intended
    matrix of hypervisors and CPU archs.
@@ -47,6 +47,7 @@ Debian-SAMBA/
   lab-router/              reusable router VM builder (code)
   appliance-core/          shared runtime libraries + blank test appliance
   samba-addc-appliance/    Samba AD DC appliance + scenarios
+  smbproxy-session-vfs/    private Samba VFS component + compatibility builds
   smb-proxy-appliance/     SMB1<->SMB3 proxy appliance + scenarios
 ```
 

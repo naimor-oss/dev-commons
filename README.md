@@ -17,7 +17,7 @@ you know what they're protecting against.
 | Understand **why this project is shaped the way it is** | [`CONTEXT.md`](CONTEXT.md) |
 | Look up **coding / docs / scripting conventions** | [`STYLE.md`](STYLE.md) |
 | Understand the **multi-agent process and ownership model** | [`AGENTIC-DEVELOPMENT.md`](AGENTIC-DEVELOPMENT.md) |
-| Understand **why there are six sibling repos** | [`REPO-SPLIT.md`](REPO-SPLIT.md) |
+| Understand **why there are seven sibling repos** | [`REPO-SPLIT.md`](REPO-SPLIT.md) |
 | See **which hypervisors / arches are validated** | [`SUPPORTED-ENVIRONMENTS.md`](SUPPORTED-ENVIRONMENTS.md) |
 | Check a repo before **publishing it to GitHub** | [`PUBLISH-CHECKLIST.md`](PUBLISH-CHECKLIST.md) |
 | Run the **release gate** before shipping a change | [`RELEASE-GATE.md`](RELEASE-GATE.md) |
@@ -35,6 +35,7 @@ Debian-SAMBA/
   lab-router/              reusable router VM builder (code)
   appliance-core/          shared appliance runtime libraries + blank test appliance
   samba-addc-appliance/    Samba AD DC appliance + scenarios
+  smbproxy-session-vfs/    private Samba VFS component + compatibility builds
   smb-proxy-appliance/     SMB1<->SMB3 proxy appliance + scenarios
 ```
 
@@ -75,7 +76,8 @@ why.
 
 ## Status
 
-Active. The six sibling repositories are public, cross-repo tooling and
+Active. Six sibling repositories are public; the new `smbproxy-session-vfs`
+repository is staged locally pending first publication. Cross-repo tooling and
 the virtualized-appliance template are in place, and
 [`RELEASE-GATE.md`](RELEASE-GATE.md) is the readiness source of truth.
 The IoT template remains intentionally skeletal until the first

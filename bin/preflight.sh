@@ -57,6 +57,8 @@ declare -a entry_points=(
     "smb-proxy-appliance/prepare-image.sh"
     "smb-proxy-appliance/smbproxy-sconfig.sh"
     "smb-proxy-appliance/smbproxy-probe-backend"
+    "smbproxy-session-vfs/scripts/build-debian-package.sh"
+    "smbproxy-session-vfs/scripts/build-apt-repository.sh"
     "appliance-core/prepare-image.sh"
     "appliance-core/core-sconfig.sh"
 )

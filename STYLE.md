@@ -44,6 +44,7 @@ Debian-SAMBA/
   lab-router/              reusable router VM builder
   appliance-core/          shared runtime libraries + blank test appliance
   samba-addc-appliance/    AD DC appliance + its scenarios
+  smbproxy-session-vfs/    private Samba VFS component + compatibility builds
   smb-proxy-appliance/     SMB1<->SMB3 proxy appliance + its scenarios
 ```
 
