@@ -54,7 +54,7 @@ is load-bearing:
 This audience sees:
 
 - All sibling source repos (`dev-commons`, `lab-kit`, `lab-router`,
-  `<appliance>-appliance`)
+  `appliance-core`, `<product>-appliance`)
 - The build pipeline
 - Lab credentials (lab-only, intentionally disposable)
 - The internal narrative — i.e. that these are custom-built
@@ -156,8 +156,9 @@ workplace open-source — not the owner's personal account, and not
 mixed with private/proprietary work.
 
 Org: **[`naimor-oss`](https://github.com/naimor-oss)** (custom
-domain `oss.naimorinc.com` planned). All five sibling repos plus
-the org's `.github` profile repo went live 2026-05-07. See
+domain `oss.naimorinc.com` planned). The original five sibling repos
+plus the org's `.github` profile repo went live 2026-05-07;
+`appliance-core` followed in May 2026. See
 [`decisions/0001-github-org-naimor-oss.md`](decisions/0001-github-org-naimor-oss.md)
 for the full rationale and consequences and
 [`PUBLISH-CHECKLIST.md`](PUBLISH-CHECKLIST.md) for the

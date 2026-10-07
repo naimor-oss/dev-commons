@@ -11,7 +11,7 @@ considered "ready to ship to the production proxy / DC". Two phases:
 
     Chains: cross-repo `sanity-check.sh`, per-appliance `bash -n` on
     every entry-point script, `appliance-core` bats unit tests
-    (94 cases), `smb-proxy` unit-helpers (96 cases). Bails on first
+    (182 cases), `smb-proxy` unit-helpers (96 cases). Bails on first
     failure with the failing repo + step named.
 
 2. **VM gate** (lab Hyper-V cluster, ~30–45 min total). Nine

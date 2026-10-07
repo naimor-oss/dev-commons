@@ -1,6 +1,6 @@
 # Sibling-Repo Layout
 
-This project lives in six sibling repositories developed side by side
+This project lives in seven sibling repositories developed side by side
 locally:
 
 ```text
@@ -10,6 +10,7 @@ Debian-SAMBA/
   lab-router/              reusable router VM builder (code)
   appliance-core/          shared appliance runtime libs + blank base appliance
   samba-addc-appliance/    Samba AD DC appliance + scenarios
+  smbproxy-session-vfs/    private Samba VFS component + compatibility builds
   smb-proxy-appliance/     SMB1<->SMB3 proxy appliance + scenarios
 ```
 
@@ -119,6 +120,21 @@ Boundary: reusable lab/router work belongs in the sibling repos.
 Cross-cutting docs (style, repo-split, agentic-development) belong
 in `dev-commons`.
 
+### `smbproxy-session-vfs`
+
+Separately versioned private Samba VFS component used by the SMB proxy.
+
+- `src/vfs_smbproxy_session.c` — canonical module source.
+- `scripts/` — exact-Debian-revision build, package, and APT-repository tools.
+- `compatibility/trixie.env` — accepted Trixie Samba package revision.
+- `.github/workflows/` — scheduled Trixie detection/build and signed-feed
+  publication.
+- `docs/` — architecture, maintenance, SMB1 compatibility, and issue ledger.
+
+Boundary: owns the Samba-dependent source and release artifacts, not appliance
+credentials, mount policy, UI, or deployment. The proxy appliance consumes a
+pinned component release and supplies the privileged mount helper.
+
 ### `smb-proxy-appliance`
 
 SMB1↔SMB3 protocol-version proxy appliance and its proxy-specific
@@ -149,6 +165,8 @@ samba-addc-appliance       smb-proxy-appliance
   consumes lab-router          consumes lab-router (router only)
   vendors appliance-core       vendors appliance-core
     libs at prep time            libs at prep time
+                               consumes smbproxy-session-vfs
+                                  at image-prep/update time
                                relies on samba-addc-appliance
                                   *lab environment* at runtime
                                   (not on its source repo)
@@ -156,6 +174,9 @@ samba-addc-appliance       smb-proxy-appliance
 appliance-core              lab-kit                     lab-router
   consumes lab-kit            no upstream deps             no upstream deps
   consumes lab-router
+
+smbproxy-session-vfs
+  consumes exact Debian Trixie Samba source at build time
 
 dev-commons
   no runtime deps; referenced by every sibling's AGENTS.md for shared
@@ -209,12 +230,12 @@ git -C dev-commons push origin main
 git -C lab-kit push origin main
 git -C lab-router push origin main
 git -C samba-addc-appliance push origin main
+git -C smbproxy-session-vfs push origin main
 git -C smb-proxy-appliance push origin main
 ```
 
-The sibling-status helper (`dev-commons/bin/sibling-status.sh`,
-landing in Phase 3) gives a one-shot view of dirty trees and
-unpushed commits across all five.
+The sibling-status helper (`dev-commons/bin/sibling-status.sh`) gives a
+one-shot view of dirty trees and unpushed commits across all seven.
 
 ## Appendix: how the project got to this layout
 

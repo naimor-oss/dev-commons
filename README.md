@@ -17,7 +17,7 @@ you know what they're protecting against.
 | Understand **why this project is shaped the way it is** | [`CONTEXT.md`](CONTEXT.md) |
 | Look up **coding / docs / scripting conventions** | [`STYLE.md`](STYLE.md) |
 | Understand the **multi-agent process and ownership model** | [`AGENTIC-DEVELOPMENT.md`](AGENTIC-DEVELOPMENT.md) |
-| Understand **why there are five sibling repos** | [`REPO-SPLIT.md`](REPO-SPLIT.md) |
+| Understand **why there are seven sibling repos** | [`REPO-SPLIT.md`](REPO-SPLIT.md) |
 | See **which hypervisors / arches are validated** | [`SUPPORTED-ENVIRONMENTS.md`](SUPPORTED-ENVIRONMENTS.md) |
 | Check a repo before **publishing it to GitHub** | [`PUBLISH-CHECKLIST.md`](PUBLISH-CHECKLIST.md) |
 | Run the **release gate** before shipping a change | [`RELEASE-GATE.md`](RELEASE-GATE.md) |
@@ -33,14 +33,16 @@ Debian-SAMBA/
   dev-commons/             this repo
   lab-kit/                 reusable lab harness (code)
   lab-router/              reusable router VM builder (code)
+  appliance-core/          shared appliance runtime libraries + blank test appliance
   samba-addc-appliance/    Samba AD DC appliance + scenarios
+  smbproxy-session-vfs/    private Samba VFS component + compatibility builds
   smb-proxy-appliance/     SMB1<->SMB3 proxy appliance + scenarios
 ```
 
-The appliances depend on `lab-kit` and `lab-router`. `dev-commons` is
-referenced by every sibling's `AGENTS.md` for the shared conventions
-but is otherwise independent — it doesn't ship code that gets called
-at runtime.
+The appliances depend on `lab-kit` and `lab-router`; product appliances
+vendor shared libraries from `appliance-core` at image-prep time.
+`dev-commons` is referenced by every sibling's `AGENTS.md` for the shared
+conventions but is otherwise independent — it doesn't ship runtime code.
 
 ## The boundary that matters most
 
@@ -68,17 +70,15 @@ why.
 | `decisions/` | ADR-style log of choices that affect multiple repos |
 | `AGENTS.md` | Agent brief for `dev-commons` itself |
 | `CLAUDE.md` | Compatibility pointer back to `AGENTS.md` |
-| `bin/` | Cross-cutting tooling (sanity check, status, FIXME trawler) — Phase 3 |
-| `template-appliance-virtualized/` | Skeleton for a new virtualized appliance — Phase 4 |
-| `template-appliance-iot/` | Stub for a future IoT appliance pattern — Phase 4 |
+| `bin/` | Cross-cutting tooling: preflight, sanity check, status, shellcheck, FIXME trawler, and scaffolding |
+| `template-appliance-virtualized/` | Skeleton for a new virtualized appliance |
+| `template-appliance-iot/` | Stub for a future IoT appliance pattern |
 
 ## Status
 
-Initial scaffolding. Phase 1 (this repo + migrated meta docs) and
-Phase 2 (sibling cleanup so they reference `../dev-commons/`) land
-together as foundations. Phases 3-6 follow:
-
-- Phase 3: cross-cutting tooling (`bin/`)
-- Phase 4: appliance templates
-- Phase 5: audit existing sibling repos against `STYLE.md`
-- Phase 6: bring approved deviations into compliance
+Active. Six sibling repositories are public; the new `smbproxy-session-vfs`
+repository is staged locally pending first publication. Cross-repo tooling and
+the virtualized-appliance template are in place, and
+[`RELEASE-GATE.md`](RELEASE-GATE.md) is the readiness source of truth.
+The IoT template remains intentionally skeletal until the first
+bare-metal appliance establishes that pattern.

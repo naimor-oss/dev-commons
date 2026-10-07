@@ -104,6 +104,16 @@ declare -a CANDIDATES=(
     "samba-addc-appliance/lab/run-scenario.sh"
     "samba-addc-appliance/tests/compliance.sh"
 
+    # standalone private Samba VFS component
+    "smbproxy-session-vfs/scripts/build-debian-package.sh"
+    "smbproxy-session-vfs/scripts/build-and-install.sh"
+    "smbproxy-session-vfs/scripts/build-apt-repository.sh"
+    "smbproxy-session-vfs/scripts/check-trixie-version.sh"
+    "smbproxy-session-vfs/scripts/export-appliance-payload.sh"
+    "smbproxy-session-vfs/scripts/check.sh"
+    "smbproxy-session-vfs/tests/source-contract.sh"
+    "smbproxy-session-vfs/tests/repository-contract.sh"
+
     # smb-proxy
     "smb-proxy-appliance/prepare-image.sh"
     "smb-proxy-appliance/smbproxy-sconfig.sh"
