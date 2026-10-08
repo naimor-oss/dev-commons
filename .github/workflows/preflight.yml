@@ -69,3 +69,21 @@ jobs:
 
       - name: AD DC console dialog harness (real PTY)
         run: bash ws/samba-addc-appliance/tests/run-tui-inputbox-harness.sh
+
+      # tests/root/*.sh drive real system paths (/etc/samba, /var/lib/...) as
+      # root, so each runs in its own disposable Debian 13 container and
+      # refuses to start without DISPOSABLE_ROOT_TEST=1.
+      - name: Root integration tests (disposable Debian 13 containers)
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          ran=0
+          for t in ws/*/tests/root/*.sh; do
+            repo=${t#ws/}; repo=${repo%%/*}
+            echo "::group::$t"
+            docker run --rm -v "$PWD/ws/$repo:/src:ro" -e DISPOSABLE_ROOT_TEST=1 \
+              debian:trixie bash "/src/${t#ws/"$repo"/}"
+            echo "::endgroup::"
+            ran=$((ran + 1))
+          done
+          echo "root integration suites run: $ran"
