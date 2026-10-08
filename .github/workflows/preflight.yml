@@ -78,11 +78,12 @@ jobs:
           set -euo pipefail
           shopt -s nullglob
           ran=0
+          # The whole workspace is mounted read-only so a suite can use its
+          # siblings (e.g. ../appliance-core/lib/kvstate.sh).
           for t in ws/*/tests/root/*.sh; do
-            repo=${t#ws/}; repo=${repo%%/*}
             echo "::group::$t"
-            docker run --rm -v "$PWD/ws/$repo:/src:ro" -e DISPOSABLE_ROOT_TEST=1 \
-              debian:trixie bash "/src/${t#ws/"$repo"/}"
+            docker run --rm -v "$PWD/ws:/ws:ro" -e DISPOSABLE_ROOT_TEST=1 \
+              debian:trixie bash "/$t"
             echo "::endgroup::"
             ran=$((ran + 1))
           done
