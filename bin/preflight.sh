@@ -75,6 +75,29 @@ for f in "${entry_points[@]}"; do
     fi
 done
 
+# 2b. Executable bits. Windows checkouts with core.fileMode=true have
+# silently dropped 100755 (audit 2026-10-07 M4, session plan 09). The
+# rule needs no manifest: a tracked file that starts with "#!" must be
+# 100755, except *.bats (run through `bats`) and docs/sketch-* (kept as
+# historical reference, never run).
+step "2b. executable bit on every tracked script"
+mode_bad=0
+for repo in dev-commons appliance-core lab-kit lab-router \
+            samba-addc-appliance smb-proxy-appliance smbproxy-session-vfs; do
+    rdir="$PARENT_DIR/$repo"
+    git -C "$rdir" rev-parse --git-dir >/dev/null 2>&1 || continue
+    while read -r mode _ _ path; do
+        [[ "$mode" == 100755 ]] && continue
+        case "$path" in *.bats|docs/sketch-*) continue ;; esac
+        [[ "$(head -c2 "$rdir/$path" 2>/dev/null)" == '#!' ]] || continue
+        printf '  %s/%s is %s; fix: git -C %s update-index --chmod=+x %s\n' \
+            "$repo" "$path" "$mode" "$repo" "$path" >&2
+        mode_bad=1
+    done < <(git -C "$rdir" ls-files -s)
+done
+(( mode_bad == 0 )) || fail "scripts tracked without the executable bit (see above)"
+pass "every tracked script is 100755"
+
 # 3. Every sibling's test suites, discovered rather than listed, so a new
 # test file is gated the day it lands. Each repo may list files to leave
 # out in tests/.preflight-skip ("<file>  # reason"); heavy harnesses that

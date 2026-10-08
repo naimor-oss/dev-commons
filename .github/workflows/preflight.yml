@@ -1,0 +1,71 @@
+# Shared no-VM gate for every sibling repo. Each sibling calls this with
+#   uses: naimor-oss/dev-commons/.github/workflows/preflight.yml@main
+# It rebuilds the Debian-SAMBA/ sibling layout, runs bin/preflight.sh with
+# tools required, then the AD DC console-dialog harness in a real PTY.
+#
+# Cross-repo changes: when a sibling has a branch with the same name as the
+# branch under test, that branch is used, so producer and consumer changes
+# validate together before either merges. Otherwise siblings use main.
+name: preflight
+
+on:
+  workflow_call:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  LC_ALL: C.UTF-8
+  SIBLINGS: >-
+    dev-commons appliance-core lab-kit lab-router
+    samba-addc-appliance smb-proxy-appliance smbproxy-session-vfs
+
+jobs:
+  preflight:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out the repository under test
+        uses: actions/checkout@v4
+        with:
+          path: ws/${{ github.event.repository.name }}
+
+      - name: Check out the other siblings
+        env:
+          UNDER_TEST: ${{ github.event.repository.name }}
+          BRANCH: ${{ github.head_ref || github.ref_name }}
+          OWNER: ${{ github.repository_owner }}
+        run: |
+          set -euo pipefail
+          cd ws
+          for repo in $SIBLINGS; do
+            [[ "$repo" == "$UNDER_TEST" ]] && continue
+            url="https://github.com/$OWNER/$repo.git"
+            ref=main
+            if [[ -n "$BRANCH" && "$BRANCH" != main ]] \
+                && git ls-remote --exit-code --heads "$url" "$BRANCH" >/dev/null 2>&1; then
+              ref="$BRANCH"
+            fi
+            echo "$repo @ $ref"
+            git clone --quiet --depth 1 --branch "$ref" "$url" "$repo"
+          done
+
+      - name: Install test tools
+        run: |
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq \
+            bats shellcheck whiptail dialog tmux openssh-client >/dev/null
+          bats --version
+          shellcheck --version | head -2
+
+      - name: Preflight (strict)
+        env:
+          PREFLIGHT_REQUIRE_TOOLS: "1"
+        run: bash ws/dev-commons/bin/preflight.sh
+
+      - name: AD DC console dialog harness (real PTY)
+        run: bash ws/samba-addc-appliance/tests/run-tui-inputbox-harness.sh
