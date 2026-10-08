@@ -1,7 +1,8 @@
 # Release gate
 
 The fixed list of checks that runs before any sibling-repo change is
-considered "ready to ship to the production proxy / DC". Two phases:
+considered "ready to ship to the production proxy / DC". Two phases, plus
+an update gate for bundles:
 
 1. **Preflight** (no VM, ~45 s). One command:
 
@@ -38,6 +39,21 @@ considered "ready to ship to the production proxy / DC". Two phases:
     Run order matters for #1→#3 and #4→#10 (each later scenario
     assumes earlier ones haven't broken the appliance state).
     Within those two streams the scenarios are independent.
+
+3. **Update gate** (for an update bundle, before it reaches a field
+    unit). Every appliance change after imaging ships as a bundle built
+    with `updates/build-bundle.sh` and applied by `smbproxy-update` /
+    `samba-addc-update` (appliance-core `docs/lib-update.md`):
+
+    - CI's root suite `tests/root/update-bundle.sh` (each appliance) is
+      green: the real bundle applied to a simulated field unit, refusals,
+      automatic rollback, manual rollback byte for byte.
+    - **T-UPG-1** on Hyper-V: build a lab unit from the same image the
+      field unit runs, configure it like production, apply the bundle,
+      then run that appliance's VM-gate scenarios above unchanged.
+    - **T-UPG-4**: roll the lab unit back with the printed command, verify
+      the previous version still runs, apply again.
+    - Only then copy the bundle and its `.sha256` to the field unit.
 
 ## Force-user contract (the load-bearing one)
 
