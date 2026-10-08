@@ -23,4 +23,4 @@ reviewer marks each finding.
 | Date | Scope | Status |
 | --- | --- | --- |
 | [2026-05-01](2026-05-01-style-compliance.md) | First full sweep against STYLE.md (all five siblings) | complete (all 10 findings resolved same-day) |
-| [2026-10-07](2026-10-07-dust-off.md) | Dust-off: docs, code, tests, and upgrade path across all seven siblings | awaiting owner resolution |
+| [2026-10-07](2026-10-07-dust-off.md) | Dust-off: docs, code, tests, and upgrade path across all seven siblings | resolved by owner 2026-10-08; work in progress |
