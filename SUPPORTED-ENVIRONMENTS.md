@@ -22,25 +22,41 @@ Modes" section. The ixgbevf panic is the canonical example: it's not
 "Hyper-V failed", it's "Hyper-V on host X with firmware Y plus
 ixgbevf passthrough failed for reason Z".
 
+## Scope
+
+**Owner decision 2026-10-08: Windows x86_64/amd64 with Hyper-V only.**
+Rows below marked *out of scope* are kept as history and as the
+starting point if scope is reopened; they are not tested and not
+promised. See `CONTEXT.md` §"Hardware and platform reality".
+
+## Development hosts
+
+| Host | Status | Notes |
+| --- | --- | --- |
+| Windows + WSL2 (Debian) | **recommended** | Linux file modes, bats/ShellCheck/Docker native; PowerShell drives Hyper-V. Lab scripts are being ported from macOS (`hdiutil`, `/Volumes/ISO`) — audit 2026-10-07 M7. |
+| Windows + Git Bash | discouraged | Drops executable bits (`core.fileMode`), cannot run bats/ShellCheck/PTY harnesses; caused audit M4. |
+| macOS (original orchestrator) | out of scope | Lab scripts still assume it until the WSL2 port lands. |
+| GitHub Actions `ubuntu-24.04` | **CI** | Shared preflight workflow in `dev-commons/.github/workflows/preflight.yml`. |
+
 ## Hypervisor / Host Matrix
 
 | Environment | CPU arch | Status | Last validated | Notes |
 | --- | --- | --- | --- | --- |
 | Hyper-V on Windows Server | amd64 | **build host** | 2026-05-01 | Primary build/test host; `samba-addc-appliance` and `smb-proxy-appliance` lab targets |
 | Hyper-V on Windows Server (different host) | amd64 | **validated** | 2026-05-01 | `smb-proxy-appliance v2026.05.01` OVA imports cleanly after Secure Boot disabled; ixgbevf VF passthrough must be off (`Set-VMNetworkAdapter -IovWeight 0`) — see Known Failure Modes |
-| Client Hyper-V on Windows desktop | amd64 | intended | — | Same APIs as Server; expected to work |
-| Parallels Desktop on macOS | amd64 | intended | — | OVA carries `firmware = "efi"` + Secure Boot off; should import |
-| Parallels Desktop on macOS | arm64 | intended | — | Awaits arm64 image variant |
-| Apple Virtualization framework (Tart, etc.) | arm64 | intended | — | Awaits arm64 image variant |
-| Synology VMM | amd64 | intended | — | KVM-based; qcow2 artifact is the natural fit |
+| Client Hyper-V on Windows desktop | amd64 | in scope, unvalidated | — | Same APIs as Server; expected to work |
+| Parallels Desktop on macOS | amd64 | *out of scope* (was: intended) | — | OVA carries `firmware = "efi"` + Secure Boot off; should import |
+| Parallels Desktop on macOS | arm64 | *out of scope* (was: intended) | — | Awaits arm64 image variant |
+| Apple Virtualization framework (Tart, etc.) | arm64 | *out of scope* (was: intended) | — | Awaits arm64 image variant |
+| Synology VMM | amd64 | *out of scope* (was: intended) | — | KVM-based; qcow2 artifact is the natural fit |
 | Synology VMM | arm64 | not applicable | — | Synology DSM virtualization is amd64-only as of this writing |
-| Raspberry Pi (bare metal) | arm64 | intended (IoT pattern) | — | Awaits IoT appliance template (different pattern from virtualized — see CONTEXT.md) |
+| Raspberry Pi (bare metal) | arm64 | *out of scope* (was: intended (IoT pattern)) | — | Awaits IoT appliance template (different pattern from virtualized — see CONTEXT.md) |
 | Raspberry Pi (bare metal) | armhf | not planned | — | New work targets arm64 only |
-| KVM/QEMU on Linux desktop | amd64 | intended | — | qcow2 artifact directly usable |
-| Proxmox VE | amd64 | intended | — | qcow2 import expected to work |
-| VirtualBox | amd64 | intended | — | OVA import expected to work |
-| VMware Workstation / Fusion | amd64 | intended | — | OVA import expected to work |
-| ESXi | amd64 | intended | — | OVA import expected to work |
+| KVM/QEMU on Linux desktop | amd64 | *out of scope* (was: intended) | — | qcow2 artifact directly usable |
+| Proxmox VE | amd64 | *out of scope* (was: intended) | — | qcow2 import expected to work |
+| VirtualBox | amd64 | *out of scope* (was: intended) | — | OVA import expected to work |
+| VMware Workstation / Fusion | amd64 | *out of scope* (was: intended) | — | OVA import expected to work |
+| ESXi | amd64 | *out of scope* (was: intended) | — | OVA import expected to work |
 
 **Status legend:**
 - **build host** — actively used to build images; assumed-working
@@ -49,6 +65,7 @@ ixgbevf passthrough failed for reason Z".
 - *intended* — believed to work; awaiting verification
 - *not applicable* — combination doesn't exist or isn't planned
 - *not planned* — explicitly out of scope
+- *out of scope* — not tested or promised since the 2026-10-08 Windows-only decision
 
 ## Known Failure Modes
 
@@ -61,6 +78,11 @@ the workaround currently in effect (if any).
   SR-IOV enabled, exposing the VF to the guest. Confirmed on
   Hyper-V UEFI Release v4.1 09/25/2025.
 - **Kernel**: Linux 6.12.74 (Debian trixie kernel `6.12.74+deb13+1-cloud-amd64`).
+- **Re-check due**: the production proxy has since run kernels
+  6.12.86 and 6.12.101 (`smbproxy-session-vfs/docs/KNOWN-ISSUES.md`).
+  Whether those still panic with VF passthrough is unverified; test on
+  the affected host before relying on or removing the blacklist
+  (audit 2026-10-07 M8).
 - **Symptom**: VM never finishes booting. Panic in
   `ixgbevf_negotiate_api+0x66/0x160` with `RIP: 0010:0x0`.
 - **Workaround in effect**: `prepare-image.sh §21B` blacklists

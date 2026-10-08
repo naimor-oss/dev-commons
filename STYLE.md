@@ -155,9 +155,21 @@ Comments:
 
 Portability:
 
-- macOS bash 3.2 is the orchestrator runtime. Don't use `${var^^}` or
-  `${var,,}` in code that runs on the Mac side; pipe through `tr` instead.
-  See `lab/scenarios/join-domain.sh` for the precedent.
+- The orchestrator runtime is moving from macOS bash 3.2 to bash 5.2
+  in WSL2 on Windows (owner decision 2026-10-08; see
+  `SUPPORTED-ENVIRONMENTS.md`). Until the lab port lands, keep
+  orchestrator code bash-3.2-safe: no `${var^^}` / `${var,,}` (pipe
+  through `tr`; precedent `lab/scenarios/join-domain.sh`).
+- Bash 5.2+ enables `patsub_replacement`: an unquoted `&` in the
+  replacement of `${var//pat/rep}` inserts the matched text. When the
+  replacement is data (template values, user input), turn the option
+  off around the substitution; precedent
+  `lab-router/scripts/lib-derive.sh` `substitute_template`. The
+  appliances run Debian 13's bash 5.2, so this applies on both sides.
+- Every tracked file that starts with `#!` is mode `100755` (except
+  `*.bats` and `docs/sketch-*`). Preflight step 2b enforces it. On a
+  Windows checkout, work inside WSL2 or set
+  `git config core.fileMode false` locally so Git does not drop the bit.
 - `find . -name '*.sh'` rather than `find / ...`; never scan from `/`.
 
 Sourced files (scenarios):
@@ -181,9 +193,10 @@ follow the same shape (heredoc'd remote scripting, helper script per
 operation, throw on missing prereqs) regardless of which CLI tool
 they wrap.
 
-### Driving Hyper-V from the Mac
+### Driving Hyper-V from the dev shell
 
-When the Mac drives a Hyper-V host via SSH, prefer the
+When the dev shell (WSL2 today, macOS historically) drives a Hyper-V
+host via SSH, prefer the
 `pwsh -File - <<'PWSH'` heredoc pattern over `pwsh -Command "..."`:
 
 ```bash

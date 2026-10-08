@@ -220,19 +220,17 @@ pattern).
 
 ## Publishing
 
-Each repo is independently pushable. There is no top-level
-super-repo or git-submodule structure. Cross-repo changes land as
-ordered commits (dependency first, consumer second) and push in the
-same order.
+Each repo is independently versioned. There is no top-level
+super-repo or git-submodule structure. Changes land through pull
+requests; nothing is pushed straight to `main`.
 
-```bash
-git -C dev-commons push origin main
-git -C lab-kit push origin main
-git -C lab-router push origin main
-git -C samba-addc-appliance push origin main
-git -C smbproxy-session-vfs push origin main
-git -C smb-proxy-appliance push origin main
-```
+Cross-repo changes use the **same branch name in every repo they
+touch**. The shared CI workflow
+(`dev-commons/.github/workflows/preflight.yml`) checks out a sibling's
+same-named branch when one exists, so producer and consumer changes
+are validated together. Merge in dependency order: producer first,
+consumer second (for example `dev-commons` → `lab-router` →
+`appliance-core` → `smbproxy-session-vfs` → `smb-proxy-appliance`).
 
 The sibling-status helper (`dev-commons/bin/sibling-status.sh`) gives a
 one-shot view of dirty trees and unpushed commits across all seven.
