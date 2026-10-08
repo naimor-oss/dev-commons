@@ -58,7 +58,7 @@ jobs:
         run: |
           sudo apt-get update -qq
           sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq \
-            bats shellcheck whiptail dialog tmux openssh-client >/dev/null
+            bats shellcheck whiptail dialog tmux openssh-client xorriso >/dev/null
           bats --version
           shellcheck --version | head -2
 
