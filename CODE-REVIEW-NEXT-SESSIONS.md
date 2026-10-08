@@ -19,7 +19,7 @@ it is not the recommended execution order.
 | [05](docs/code-review-session-plans/05-safe-state-serialization.md) | Replace executable state serialization and validate inputs | P2 | core, AD DC, proxy |
 | [06](docs/code-review-session-plans/06-transactional-config-application.md) | Propagate apply failures and roll back partial configuration | P2 | proxy |
 | [07](docs/code-review-session-plans/07-worker-fail-closed-inventory.md) | Keep missing or corrupt proxy shares withdrawn | P2 | proxy |
-| [08](docs/code-review-session-plans/08-vfs-partial-read-semantics.md) | Preserve successful partial VFS reads | P2 | VFS, proxy consumer |
+| [08](docs/code-review-session-plans/08-vfs-partial-read-semantics.md) | Preserve successful partial VFS reads — **closed 2026-10-08, no change** (matches Samba default; see plan) | P2 | VFS, proxy consumer |
 | [09](docs/code-review-session-plans/09-windows-filemode-hygiene.md) | Eliminate Windows executable-bit drift | P2 | all four repositories |
 
 ## Recommended execution order
