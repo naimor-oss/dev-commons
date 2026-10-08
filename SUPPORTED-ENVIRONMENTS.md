@@ -33,9 +33,9 @@ promised. See `CONTEXT.md` §"Hardware and platform reality".
 
 | Host | Status | Notes |
 | --- | --- | --- |
-| Windows + WSL2 (Debian) | **recommended** | Linux file modes, bats/ShellCheck/Docker native; PowerShell drives Hyper-V. Lab scripts are being ported from macOS (`hdiutil`, `/Volumes/ISO`) — audit 2026-10-07 M7. |
+| Windows + WSL2 (Debian) | **recommended** | Linux file modes, bats/ShellCheck/Docker native; PowerShell drives Hyper-V. Lab scripts run here through `lab-kit/lib/lab-host.sh`; setup and first-run checklist in [`WSL2-LAB-SETUP.md`](WSL2-LAB-SETUP.md). |
 | Windows + Git Bash | discouraged | Drops executable bits (`core.fileMode`), cannot run bats/ShellCheck/PTY harnesses; caused audit M4. |
-| macOS (original orchestrator) | out of scope | Lab scripts still assume it until the WSL2 port lands. |
+| macOS (original orchestrator) | out of scope | Still works through `lab-kit/lib/lab-host.sh` (`/Volumes/ISO`, `hdiutil`) but is no longer tested. |
 | GitHub Actions `ubuntu-24.04` | **CI** | Shared preflight workflow in `dev-commons/.github/workflows/preflight.yml`. |
 
 ## Hypervisor / Host Matrix
