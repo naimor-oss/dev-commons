@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # bin/preflight.sh — composed no-VM gate.
 #
-# Run this BEFORE any VM scenario. It chains the four cheap checks
+# Run this BEFORE any VM scenario. It chains the cheap checks
 # that catch the regressions a fresh VM run would otherwise burn 10+
 # minutes per scenario re-discovering:
 #
@@ -12,11 +12,11 @@
 #      pass also picks up files outside the dirs sanity-check walks
 #      (and isolating these failures by appliance gives clearer
 #      output than the combined sweep).
-#   3. appliance-core: bats tests/unit/ — currently 182 cases over
-#      detect-net, identity, tui, hostname, apt-helpers, netconfig.
-#   4. smb-proxy: bash tests/unit-helpers.sh — pure-function
-#      assertions on share_safe_name, share_name_validate,
-#      backend_mount_opts, etc.
+#   3. Every test suite in every sibling: tests/*.sh and tests/**/*.bats,
+#      discovered automatically (per-repo opt-outs in
+#      tests/.preflight-skip, each with a reason).
+#   4. Design-contract source guards, appliance-core compliance, and
+#      strict shellcheck (steps 4-6 below).
 #
 # Exits non-zero on the FIRST failure with the failing repo + step
 # named, so you fix the closest problem instead of staring at a
@@ -75,38 +75,62 @@ for f in "${entry_points[@]}"; do
     fi
 done
 
-# 3. appliance-core bats unit tests.
-step "3. appliance-core bats tests/unit/"
-ac_dir="$PARENT_DIR/appliance-core"
-if [[ -d "$ac_dir/tests/unit" ]]; then
-    if ! command -v bats >/dev/null 2>&1; then
-        printf '  skip — bats not installed (brew install bats-core / apt install bats)\n'
-    else
-        ( cd "$ac_dir" && bats tests/unit/ ) \
-            || fail "appliance-core bats tests failed"
-        pass "appliance-core bats"
-    fi
-else
-    printf '  skip — appliance-core/tests/unit not present\n'
+# 3. Every sibling's test suites, discovered rather than listed, so a new
+# test file is gated the day it lands. Each repo may list files to leave
+# out in tests/.preflight-skip ("<file>  # reason"); heavy harnesses that
+# need Docker or a PTY run in CI instead. Set PREFLIGHT_REQUIRE_TOOLS=1
+# (CI does) to fail, rather than skip, when bats or shellcheck is absent.
+step "3. sibling test suites (tests/*.sh, tests/**/*.bats)"
+require_tools="${PREFLIGHT_REQUIRE_TOOLS:-0}"
+if [[ "$require_tools" == "1" ]]; then
+    for tool in bats shellcheck; do
+        command -v "$tool" >/dev/null 2>&1 || fail "$tool is required (PREFLIGHT_REQUIRE_TOOLS=1)"
+    done
 fi
+declare -a test_repos=(
+    dev-commons appliance-core lab-kit lab-router
+    samba-addc-appliance smb-proxy-appliance smbproxy-session-vfs
+)
+suites_run=0
+suite_log=$(mktemp "${TMPDIR:-/tmp}/preflight-suite.XXXXXX")
+trap 'rm -f "$suite_log"' EXIT
+for repo in "${test_repos[@]}"; do
+    tdir="$PARENT_DIR/$repo/tests"
+    [[ -d "$tdir" ]] || { printf '  skip %s (no tests/ directory)\n' "$repo"; continue; }
+    skip_list=""
+    [[ -f "$tdir/.preflight-skip" ]] && skip_list=$(sed -e 's/#.*//' -e 's/[[:space:]]*$//' "$tdir/.preflight-skip")
+    while IFS= read -r t; do
+        rel="${t#"$tdir"/}"
+        if grep -qxF -- "$rel" <<< "$skip_list"; then
+            printf '  skip %s/tests/%s (tests/.preflight-skip)\n' "$repo" "$rel"
+            continue
+        fi
+        case "$t" in
+            *.bats)
+                if ! command -v bats >/dev/null 2>&1; then
+                    printf '  skip %s/tests/%s (bats not installed)\n' "$repo" "$rel"
+                    continue
+                fi
+                runner=(bats "$t") ;;
+            *)  runner=(bash "$t") ;;
+        esac
+        if ! ( cd "$PARENT_DIR/$repo" && "${runner[@]}" ) > "$suite_log" 2>&1; then
+            tail -30 "$suite_log" >&2
+            fail "$repo/tests/$rel"
+        fi
+        pass "$repo/tests/$rel"
+        suites_run=$((suites_run + 1))
+    done < <(find "$tdir" -type f \( -name '*.bats' -o -name '*.sh' \) | LC_ALL=C sort)
+done
+(( suites_run > 0 )) || fail "no test suites found — is the sibling layout present?"
 
-# 4. smb-proxy unit-helpers.
-step "4. smb-proxy tests/unit-helpers.sh"
-sp_test="$PARENT_DIR/smb-proxy-appliance/tests/unit-helpers.sh"
-if [[ -f "$sp_test" ]]; then
-    bash "$sp_test" || fail "smb-proxy unit-helpers failed"
-    pass "smb-proxy unit-helpers"
-else
-    printf '  skip — smb-proxy unit-helpers.sh not present\n'
-fi
-
-# 5. Source-level contract guards. These pin design decisions
+# 4. Source-level contract guards. These pin design decisions
 # documented in samba-addc-appliance/docs/DFS-N.md and
 # smb-proxy-appliance/docs/LAB-TESTING.md so a refactor that
 # silently violates the protocol fails preflight before any VM
 # run. Each guard is a single grep over the runtime source — the
 # protocol claim is encoded as the search pattern.
-step "5. design-contract source guards"
+step "4. design-contract source guards"
 
 addc_sconfig="$PARENT_DIR/samba-addc-appliance/samba-sconfig.sh"
 proxy_sconfig="$PARENT_DIR/smb-proxy-appliance/smbproxy-sconfig.sh"
@@ -238,13 +262,13 @@ guard_grep "proxy: nosharesock in cifs option string" \
     "$proxy_sconfig" \
     'nosharesock'
 
-# 6. Appliance-core compliance: runs the generalized 10-check
+# 5. Appliance-core compliance: runs the generalized 10-check
 # contract suite against every appliance found in the sibling layout.
 # The checks are documented inline in
 # appliance-core/bin/compliance-check.sh; --list prints the surface.
 # Each check guards against a specific bug class we've actually
 # seen (see the "Guards against" column).
-step "6. appliance-core compliance check"
+step "5. appliance-core compliance check"
 compliance_checker="$PARENT_DIR/appliance-core/bin/compliance-check.sh"
 if [[ -x "$compliance_checker" ]]; then
     for app in samba-addc-appliance smb-proxy-appliance; do
@@ -263,13 +287,13 @@ else
     printf '  skip — appliance-core/bin/compliance-check.sh not present at %s\n' "$compliance_checker"
 fi
 
-# 7. Static analysis. The current tree is clean at severity=warning
+# 6. Static analysis. The current tree is clean at severity=warning
 # with the documented exclusion list (SC1090, SC1091, SC2034 — rationale
 # inline in bin/shellcheck-all.sh). Any new finding fails preflight
 # before it reaches a VM run. The wrapper skips with a one-line note
 # (and exits 0) when shellcheck is not installed, so preflight stays
 # green on hosts without it.
-step "7. shellcheck-all (strict)"
+step "6. shellcheck-all (strict)"
 "$SCRIPT_DIR/shellcheck-all.sh" --strict || fail "shellcheck-all reported findings (run bin/shellcheck-all.sh standalone for the full list)"
 
 printf '\n%spreflight: ALL CLEAN%s — safe to start a VM run.\n' "$BOLD" "$RST"
