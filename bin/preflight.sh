@@ -139,7 +139,10 @@ for repo in "${test_repos[@]}"; do
                 runner=(bats "$t") ;;
             *)  runner=(bash "$t") ;;
         esac
-        if ! ( cd "$PARENT_DIR/$repo" && "${runner[@]}" ) > "$suite_log" 2>&1; then
+        # stdin is the find list feeding this loop: a suite that reads stdin
+        # (script(1) in tui.bats does) would swallow the next file name and
+        # silently skip that suite.
+        if ! ( cd "$PARENT_DIR/$repo" && "${runner[@]}" ) < /dev/null > "$suite_log" 2>&1; then
             tail -30 "$suite_log" >&2
             fail "$repo/tests/$rel"
         fi
