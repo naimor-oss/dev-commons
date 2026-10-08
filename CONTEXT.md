@@ -116,20 +116,26 @@ roadmap. The implication: **assumptions about "the host" or "the
 architecture" need to be qualified explicitly**, not silently
 defaulted.
 
-Today (validated, in active use):
+**Scope decision (owner, 2026-10-08): Windows x86_64/amd64 only.**
+Every deployment target today is Hyper-V on Windows, so development,
+testing, and support promises are restricted to that. The rest of this
+section stays as history and as the map for reopening scope later.
 
-- Hyper-V on Windows Server (primary build/test host)
+In scope (validated, in active use):
+
+- Hyper-V on Windows Server (primary build/test host and the
+  production hosts)
 - Hyper-V on Windows workstations (Client Hyper-V — same APIs, some
   cmdlets stripped)
+- Development on a Windows host. The recommended shell is WSL2
+  (Debian): real Linux file modes, native bats/ShellCheck/Docker, and
+  PowerShell still drives Hyper-V. The lab scripts were written for a
+  macOS orchestrator and are being ported (audit 2026-10-07, M7).
 
-Today (occasional / case-by-case use):
+Out of scope until reopened (previously occasional or planned):
 
-- Parallels (macOS host)
-- Apple Virtualization framework (Apple Silicon — arm64)
-- Synology VMM (KVM-based, AMD CPUs)
-
-Within ~6 months (inevitable, planning for):
-
+- Parallels (macOS host), Apple Virtualization framework (arm64),
+  Synology VMM
 - arm64 appliances (Apple Silicon for local AI inference; ARM-based
   Edge AI hardware)
 - IoT / Raspberry Pi appliances for shop-floor use cases (different
@@ -137,9 +143,9 @@ Within ~6 months (inevitable, planning for):
 
 Implication for current work:
 
-- amd64 stays the default *today* — no premature porting
-- Don't bake `amd64` into filenames, paths, or assumptions where
-  `arch` would do
+- amd64 is the only target; no porting work
+- Still don't bake `amd64` into filenames, paths, or assumptions where
+  `arch` would do — it costs nothing and keeps the door open
 - `dev-commons/SUPPORTED-ENVIRONMENTS.md` tracks what's been
   validated where, so "host-agnostic" is a verified claim, not an
   aspiration
