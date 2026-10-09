@@ -94,6 +94,9 @@ declare -a CANDIDATES=(
     "appliance-core/lib/hostname.sh"
     "appliance-core/lib/apt-helpers.sh"
     "appliance-core/lib/netconfig.sh"
+    "appliance-core/lib/timezone.sh"
+    "appliance-core/lib/kvstate.sh"
+    "appliance-core/lib/update.sh"
 
     # samba-addc
     "samba-addc-appliance/prepare-image.sh"
