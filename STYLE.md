@@ -200,7 +200,7 @@ host via SSH, prefer the
 `pwsh -File - <<'PWSH'` heredoc pattern over `pwsh -Command "..."`:
 
 ```bash
-ssh nmadmin@server pwsh -File - <<'PWSH' 2>&1 | tail -10
+ssh labadmin@server pwsh -File - <<'PWSH' 2>&1 | tail -10
 $adapterName = 'vEthernet (Lab-NAT)'
 Enable-NetAdapter -Name $adapterName -Confirm:$false
 PWSH
