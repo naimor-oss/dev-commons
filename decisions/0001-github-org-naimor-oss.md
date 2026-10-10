@@ -19,8 +19,8 @@ distinct identities:
   of these tools
 
 Both `samba-addc-appliance` and `smb-proxy-appliance` already carry
-the workplace identity in tracked content (`naimor.naimorinc.com`
-realm references in `docs/sketch-smb1-smb3-proxy.sh`, the
+the workplace identity in tracked content (the workplace AD realm
+references in `docs/sketch-smb1-smb3-proxy.sh`, the
 historical sketch script). With more sibling repos coming and an
 expectation of partial outsourcing of IT operations within
 2-9 months, the conflation will only get worse.
