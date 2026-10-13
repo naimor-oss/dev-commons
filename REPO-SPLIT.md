@@ -235,6 +235,38 @@ consumer second (for example `dev-commons` → `lab-router` →
 The sibling-status helper (`dev-commons/bin/sibling-status.sh`) gives a
 one-shot view of dirty trees and unpushed commits across all seven.
 
+### Workspace scripts
+
+The order and the branch rules above are encoded in `bin/` so nobody (human
+or agent) has to rediscover them. The order lives in one place,
+`bin/lib-workspace.sh` (`WS_ORDER`).
+
+| Step | Command | What it does |
+| --- | --- | --- |
+| 1. Look | `bin/sibling-status.sh` | Branch, dirty files, ahead/behind per repo. |
+| 2. Align | `bin/ws-sync.sh [BRANCH]` | Fetch every repo, check out BRANCH where it exists (else the default branch), fast-forward. Skips dirty trees and diverged branches; never discards. |
+| 3. Gate | `bin/preflight.sh` | The no-VM gate across all siblings. |
+| 4. Push | `bin/ws-publish.sh BRANCH [--yes] [--pr]` | Push one branch name across the repos in dependency order; plan only without `--yes`. `--pr` opens PRs and first checks the active `gh` account can push. |
+| 5. Merge | `bin/ws-merge.sh BRANCH [--yes]` | Merge the PRs producer first, waiting for green; a red check stops the run. Then runs `ws-sync.sh --prune-merged`. |
+
+Rules the scripts enforce, learned the slow way:
+
+- **One branch name across repos.** CI checks out the same-named sibling
+  branch; different names mean a consumer PR is tested against the
+  producer's `main` and fails until the producer merges.
+- **Producer first.** Consumers' tests read the sibling checkout.
+- **Check the `gh` account before opening PRs.** A read-only account pushes
+  fine and only fails at PR creation ("must be a collaborator"). Switch with
+  `gh auth switch -u NAME`.
+- **A red check stops the merge run.** `--allow-red` is only for a failure
+  that is the CI infrastructure's (for example a Docker Hub pull rate limit
+  in the root-test step), never for a failing test; say so in the PR.
+- **After merging, return to the default branch** (`ws-sync.sh`), so the next
+  session does not start on a stale branch.
+
+`tests/workspace-scripts.sh` exercises all of this against throwaway
+repositories and a fake `gh`.
+
 ## Appendix: how the project got to this layout
 
 The work started as a single repository containing the Samba

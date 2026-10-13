@@ -69,11 +69,21 @@ A few things specific to a meta-repo:
   in two appliance repos in a similar shape, promote it to the
   template here.
 
+## Cross-repo workflow (use the scripts, not memory)
+
+Pushing, merging and switching branches across the siblings has a fixed
+order and a few traps (same branch name everywhere, producer first, the
+right `gh` account, stop on a red check). `bin/ws-sync.sh`,
+`bin/ws-publish.sh` and `bin/ws-merge.sh` encode all of it; see
+[`REPO-SPLIT.md`](REPO-SPLIT.md#workspace-scripts). Start a session with
+`bin/sibling-status.sh` then `bin/ws-sync.sh`; do not re-derive the order.
+
 ## Checks
 
 ```bash
 bash bin/sanity-check.sh
-bash -n bin/find-fixmes.sh bin/sibling-status.sh bin/sanity-check.sh
+bash -n bin/find-fixmes.sh bin/sibling-status.sh bin/sanity-check.sh bin/ws-*.sh
+bash tests/workspace-scripts.sh
 ```
 
 ## Vendor-specific notes
