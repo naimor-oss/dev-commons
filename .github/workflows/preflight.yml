@@ -73,6 +73,8 @@ jobs:
       # tests/root/*.sh drive real system paths (/etc/samba, /var/lib/...) as
       # root, so each runs in its own disposable Debian 13 container and
       # refuses to start without DISPOSABLE_ROOT_TEST=1.
+      # The image comes from the ECR Public mirror of Docker Hub official images:
+      # anonymous Docker Hub pulls from shared runners hit toomanyrequests.
       - name: Root integration tests (disposable Debian 13 containers)
         run: |
           set -euo pipefail
@@ -83,7 +85,7 @@ jobs:
           for t in ws/*/tests/root/*.sh; do
             echo "::group::$t"
             docker run --rm -v "$PWD/ws:/ws:ro" -e DISPOSABLE_ROOT_TEST=1 \
-              debian:trixie bash "/$t"
+              public.ecr.aws/docker/library/debian:trixie bash "/$t"
             echo "::endgroup::"
             ran=$((ran + 1))
           done
