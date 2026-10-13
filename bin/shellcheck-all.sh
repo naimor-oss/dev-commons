@@ -83,6 +83,10 @@ declare -a CANDIDATES=(
     "dev-commons/bin/find-fixmes.sh"
     "dev-commons/bin/check-dangerous-cmds.sh"
     "dev-commons/bin/new-appliance.sh"
+    "dev-commons/bin/lib-workspace.sh"
+    "dev-commons/bin/ws-sync.sh"
+    "dev-commons/bin/ws-publish.sh"
+    "dev-commons/bin/ws-merge.sh"
 
     # appliance-core
     "appliance-core/prepare-image.sh"
