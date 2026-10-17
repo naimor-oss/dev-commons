@@ -22,7 +22,23 @@ time.
    it as the SSH jump host to the lab VMs, exactly as before.
 4. The ISO directory **`D:\ISO\`** (the scripts expect this host path;
    `LAB_HOST_STAGE_DIR` and `ISO_DIR_HOST` override it).
-5. The lab router and switches from `lab-router` (unchanged).
+5. The lab router and switches from `lab-router`. Choose the switch for
+   the router's **WAN** (its uplink); the LAN switch is always a new
+   Internal switch:
+   - **Default Switch** (client Hyper-V's built-in NAT): no setup, and the
+     router's WAN gets DHCP. Its DHCP and NAT come from Internet Connection
+     Sharing (ICS), so it fails where Group Policy prohibits ICS on the
+     domain network: the router never gets a WAN lease (see
+     Troubleshooting).
+   - **External (bridged) switch**: the router's WAN sits on the upstream
+     LAN and takes a lease there. `New-LabRouter.ps1` turns on DhcpGuard and
+     RouterGuard on that adapter, so the router cannot serve DHCP or router
+     advertisements upstream.
+   - **Private WinNAT uplink**: `New-LabRouter.ps1 -CreateWanNat` creates an
+     Internal `Lab-WAN` switch, a host vNIC on it and a `New-NetNat` (the NAT
+     WSL2 and containers use, independent of ICS). There is no DHCP there:
+     stage the router with a static WAN (`--wan-ip 192.168.250.2/24
+     --wan-gateway 192.168.250.1`; lab-router `docs/configuration.md`).
 
 ## 2. WSL2 side
 
@@ -121,4 +137,5 @@ Run these in order from `~/src` and note anything that fails:
 | `no ISO builder` | `sudo apt-get install xorriso`. |
 | `$'\r': command not found` | The repo was cloned with CRLF endings: `git config core.autocrlf false`, re-clone. |
 | Permission bits lost / scripts not executable | The clone lives under `/mnt/c`; move it into the WSL2 filesystem. |
+| Router WAN has no IPv4 address; first boot leaves `router-failed.marker` (nftables/dnsmasq not installed) | On the Default Switch: DHCP requests go unanswered because ICS is prohibited by policy (domain-joined clients). Use an External switch or the WinNAT uplink (section 1, step 5). |
 | `ssh: connect to host localhost port 22` | OpenSSH Server not running on Windows, or mirrored networking is off (use the host's IP as `HV_HOST`). |
