@@ -103,7 +103,8 @@ pass "every tracked script is 100755"
 # out in tests/.preflight-skip ("<file>  # reason"); heavy harnesses that
 # need Docker or a PTY run in CI instead. tests/root/ holds integration
 # tests that must run as root against real system paths; preflight never
-# runs them on a dev machine, CI runs them in a throwaway container. Set PREFLIGHT_REQUIRE_TOOLS=1
+# runs them: bin/root-tests.sh does, in throwaway containers, on a machine
+# with Docker. Set PREFLIGHT_REQUIRE_TOOLS=1
 # (CI does) to fail, rather than skip, when bats or shellcheck is absent.
 step "3. sibling test suites (tests/*.sh, tests/**/*.bats)"
 require_tools="${PREFLIGHT_REQUIRE_TOOLS:-0}"
@@ -150,7 +151,7 @@ for repo in "${test_repos[@]}"; do
         suites_run=$((suites_run + 1))
     done < <(find "$tdir" -path "$tdir/root" -prune -o -type f \( -name '*.bats' -o -name '*.sh' \) -print | LC_ALL=C sort)
     if [[ -d "$tdir/root" ]]; then
-        printf '  skip %s/tests/root/ (root-only; CI runs it in a disposable Debian 13 container)\n' "$repo"
+        printf '  skip %s/tests/root/ (root-only; bin/root-tests.sh runs it, with Docker)\n' "$repo"
     fi
 done
 (( suites_run > 0 )) || fail "no test suites found — is the sibling layout present?"

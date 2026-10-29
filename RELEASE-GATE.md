@@ -45,9 +45,11 @@ an update gate for bundles:
     with `updates/build-bundle.sh` and applied by `smbproxy-update` /
     `samba-addc-update` (appliance-core `docs/lib-update.md`):
 
-    - CI's root suite `tests/root/update-bundle.sh` (each appliance) is
-      green: the real bundle applied to a simulated field unit, refusals,
-      automatic rollback, manual rollback byte for byte.
+    - The root suite `tests/root/update-bundle.sh` (each appliance) is
+      green under `dev-commons/bin/root-tests.sh`, run on a machine with
+      Docker (GitHub's preflight doesn't run root suites): the real
+      bundle applied to a simulated field unit, refusals, automatic
+      rollback, manual rollback byte for byte.
     - **T-UPG-1** on Hyper-V: build a lab unit from the same image the
       field unit runs, configure it like production, apply the bundle,
       then run that appliance's VM-gate scenarios above unchanged.

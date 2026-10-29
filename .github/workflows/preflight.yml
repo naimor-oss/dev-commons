@@ -70,45 +70,6 @@ jobs:
       - name: AD DC console dialog harness (real PTY)
         run: bash ws/samba-addc-appliance/tests/run-tui-inputbox-harness.sh
 
-      # tests/root/*.sh drive real system paths (/etc/samba, /var/lib/...) as
-      # root, so each runs in its own disposable Debian 13 container and
-      # refuses to start without DISPOSABLE_ROOT_TEST=1.
-      # The image is pulled once, from the first registry that serves it:
-      # anonymous pulls from shared runners hit each registry's limit in turn
-      # (Docker Hub's toomanyrequests, then ECR Public's "Data limit
-      # exceeded"), and one refusal shouldn't fail a test that never ran.
-      - name: Root integration tests (disposable Debian 13 containers)
-        run: |
-          set -euo pipefail
-          shopt -s nullglob
-          suites=(ws/*/tests/root/*.sh)
-          if ((${#suites[@]} == 0)); then
-            echo "root integration suites run: 0"
-            exit 0
-          fi
-          image=
-          for src in mirror.gcr.io/library/debian:trixie \
-                     public.ecr.aws/docker/library/debian:trixie \
-                     docker.io/library/debian:trixie; do
-            for try in 1 2; do
-              if docker pull --quiet "$src"; then image=$src; break 2; fi
-              echo "pull $src failed (try $try)"
-              sleep $((try * 20))
-            done
-          done
-          if [[ -z $image ]]; then
-            echo "::error::No registry served debian:trixie (rate limits); no root suite ran"
-            exit 1
-          fi
-          echo "image: $image"
-          ran=0
-          # The whole workspace is mounted read-only so a suite can use its
-          # siblings (e.g. ../appliance-core/lib/kvstate.sh).
-          for t in "${suites[@]}"; do
-            echo "::group::$t"
-            docker run --rm --pull never -v "$PWD/ws:/ws:ro" -e DISPOSABLE_ROOT_TEST=1 \
-              "$image" bash "/$t"
-            echo "::endgroup::"
-            ran=$((ran + 1))
-          done
-          echo "root integration suites run: $ran"
+      # tests/root/*.sh (root, disposable containers) don't run here:
+      # anonymous image pulls from shared runners hit each registry's rate
+      # or data limit in turn. They run locally with bin/root-tests.sh.
