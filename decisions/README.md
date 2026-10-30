@@ -28,3 +28,4 @@ the proposal records *how*.
 | --- | --- | --- |
 | [0001](0001-github-org-naimor-oss.md) | GitHub org for the open-source workplace tooling | accepted |
 | [0002](0002-appliance-core.md) | Appliance core as a new sibling repo (paired with [proposal](../proposals/appliance-core-design.md)) | accepted |
+| [0003](0003-root-suites-run-locally.md) | Root suites run locally, and preflight asks for their result | accepted |

@@ -13,9 +13,10 @@
 # With no repo named, every sibling's suites run. --pull refreshes the
 # image; otherwise it is pulled only when absent. ROOT_TEST_IMAGE overrides
 # the image (default debian:trixie). Every suite runs even after a failure;
-# the exit status is non-zero if any failed. A pull request that changes a
-# root suite or the code one covers states this script's summary line in
-# its Validation section.
+# the exit status is non-zero if any failed. A pull request whose change a
+# root suite exercises states the summary line, with no failures, in its
+# description; preflight fails it otherwise (bin/root-suite-gate.sh,
+# decisions/0003).
 #
 # Run from any directory; the script resolves the sibling layout relative
 # to its own location, and mounts it read-only at /ws so a suite can use
