@@ -25,7 +25,7 @@ you know what they're protecting against.
 | **Scaffold a new appliance repo** from the template | `bin/new-appliance.sh` (template lives at `template-appliance-virtualized/`) |
 | Run a cross-sibling **sanity check / status / FIXME trawl** | `bin/sanity-check.sh`, `bin/sibling-status.sh`, `bin/find-fixmes.sh` |
 | Run the **no-VM preflight** before any lab scenario | `bin/preflight.sh` |
-| Run the **root integration suites** (`tests/root/`, Docker; not run on GitHub) | `bin/root-tests.sh` |
+| Run the **root integration suites** (`tests/root/`, Docker; not run on GitHub, but a pull request they exercise states the result, [decision 0003](decisions/0003-root-suites-run-locally.md)) | `bin/root-tests.sh` |
 
 ## Sibling layout
 
